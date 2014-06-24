@@ -1,0 +1,19 @@
+= TomatoJuice : Pomodoro Time Tracker for GNOME
+
+Version:: 0.0.1
+Author::  Cathal Mc Ginley
+Date::    2014-06-24
+
+TomatoJuice is a Time Tracker application for GNOME, based on the
+Pomodoro technique. It helps you to break up your work into periods of
+concentrated work and short rest periods, and also to record what you
+did during the work phase.
+
+It uses:
+
+ * Java GNOME 
+ * Akka Actors
+ * MySQL
+
+
+
