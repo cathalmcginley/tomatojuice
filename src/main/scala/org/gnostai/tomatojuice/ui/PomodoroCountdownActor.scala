@@ -18,6 +18,8 @@ object PomodoroCountdownActor {
 
   
   case object FinishedBreak
+  
+  case object NotifyCompletion
 
   case object HideIcon
   
@@ -27,7 +29,7 @@ class PomodoroCountdownActor(facade: PomodoroCountdownIcon) extends Actor {
 
   import PomodoroCountdownActor._
 
-  val OneMinute = 60 seconds
+  val OneMinute = 1 seconds
   val PomodoroDuration = 25
   val BreakDuration = 5
 
@@ -45,6 +47,10 @@ class PomodoroCountdownActor(facade: PomodoroCountdownIcon) extends Actor {
       for (c <- lastTimer) c.cancel()
       context.become(resetTimer orElse countDownBreak)
       self ! CountDownBreak(BreakDuration)
+    case NotifyCompletion =>
+      facade.safely {
+        facade.playSound()
+      }
     case HideIcon =>
       facade.safely {
         facade.hideIcon()
@@ -77,7 +83,7 @@ class PomodoroCountdownActor(facade: PomodoroCountdownIcon) extends Actor {
           }
         }
         context.become(resetTimer orElse awaitingCountDownBreak)
-
+        self ! NotifyCompletion
       }
 
   }
@@ -108,6 +114,7 @@ class PomodoroCountdownActor(facade: PomodoroCountdownIcon) extends Actor {
           }
         }
         context.become(resetTimer orElse awaitingCountDownPomodoro)
+        self ! NotifyCompletion
       }
   }
 }

@@ -8,10 +8,7 @@ import org.gnome.gdk.Pixbuf
 import org.gnome.notify.Notification
 import org.gnome.notify.Notify
 import tomatojuice.JavaSounds
-import javax.sound.sampled.AudioSystem
-import java.net.URL
-import javax.sound.sampled.DataLine
-import javax.sound.sampled.Clip
+
 
 class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
 
@@ -39,24 +36,13 @@ class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
     uniq.removeWindow(window)
   }
 
-  def playSound() {
 
-    val wav = this.getClass.getResource("/scanning.wav")
-    println(wav)
-    val wav2 = new URL("file:///usr/share/sounds/pop.wav")
-    val inputStream = AudioSystem.getAudioInputStream(wav)
-    val format = inputStream.getFormat
-    val info = new DataLine.Info(classOf[Clip], format)
-    val clip = AudioSystem.getLine(info).asInstanceOf[Clip]
-    clip.open(inputStream)
-    clip.start()
-  }
 
   def displayNotification() {
     val note = new Notification("foo", "man", "about")
     note.setTimeout(Notification.NOTIFY_EXPIRES_DEFAULT)
     note.show()
-    playSound()
+    ////playSound()
   }
 
   //  def displayTimeout(minsRemaining: Int) {

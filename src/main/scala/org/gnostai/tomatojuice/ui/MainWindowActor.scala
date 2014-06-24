@@ -114,7 +114,7 @@ class MainWindowActor extends Actor {
     uniqueApplication.connect(new Application.Activate() {
       def onActivate(source: Application) {
         mainWin.activateGui
-        countdown ! PomodoroCountdownActor.StartPomodoro
+        //countdown ! PomodoroCountdownActor.StartPomodoro
       }
     })
 

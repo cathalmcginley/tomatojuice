@@ -5,6 +5,12 @@ import org.gnome.gtk.StatusIcon
 import org.gnome.gdk.Pixbuf
 import org.gnostai.tomatojuice.ui.MainWindowActor
 
+
+import javax.sound.sampled.AudioSystem
+import java.net.URL
+import javax.sound.sampled.DataLine
+import javax.sound.sampled.Clip
+
 class PomodoroCountdownIcon(mainWindowActor: ActorRef) extends GtkUIFacade {
   private val countdownImages = Seq("00.png",
     "01.png", "02.png", "03.png", "04.png", "05.png",
@@ -32,6 +38,19 @@ class PomodoroCountdownIcon(mainWindowActor: ActorRef) extends GtkUIFacade {
   
   def hideIcon() {
     status.setVisible(false)
+  }
+  
+    def playSound() {
+
+    val wav = this.getClass.getResource("/complete.wav")
+    println(wav)
+    val wav2 = new URL("file:///usr/share/sounds/pop.wav")
+    val inputStream = AudioSystem.getAudioInputStream(wav)
+    val format = inputStream.getFormat
+    val info = new DataLine.Info(classOf[Clip], format)
+    val clip = AudioSystem.getLine(info).asInstanceOf[Clip]
+    clip.open(inputStream)
+    clip.start()
   }
   
   private def buildStatusIcon() = {
