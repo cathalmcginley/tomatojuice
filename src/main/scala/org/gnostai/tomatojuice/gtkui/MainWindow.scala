@@ -67,6 +67,12 @@ class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
 
     mainVBox.add(new Label("This is a test")) /* HACK */
 
+    
+    val mainHBox = new HBox(false, 0)
+    val nav = new NavigationPane
+    mainHBox.add(nav.widget)
+    mainVBox.add(mainHBox)
+    
     // mainVbox add menubar
 
     ////val mainMenu = new MainMenu()
