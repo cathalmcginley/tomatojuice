@@ -29,7 +29,7 @@ class PomodoroCountdownActor(facade: PomodoroCountdownIcon) extends Actor {
 
   import PomodoroCountdownActor._
 
-  val OneMinute = 1 seconds
+  val OneMinute = 60 seconds
   val PomodoroDuration = 25
   val BreakDuration = 5
 
