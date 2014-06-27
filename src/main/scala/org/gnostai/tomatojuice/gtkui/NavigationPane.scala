@@ -3,7 +3,12 @@ package org.gnostai.tomatojuice.gtkui
 import org.gnome.gtk._
 import org.gnome.gdk.Pixbuf
 
-class NavigationPane {
+trait WidgetManager {
+  protected[gtkui] def widget: Widget
+}
+
+
+class NavigationPane extends WidgetManager {
 
   private val navPane = new VBox(false, 0)
 
@@ -127,7 +132,7 @@ class NavigationPane {
   }
   
 
-  protected[gtkui] def widget: Widget = navPane
+  override protected[gtkui] def widget: Widget = navPane
 }
 
 import java.io.File

@@ -20,6 +20,8 @@ object MainWindowActor {
   case object ShutdownUI
   
   case object ActivateStatusIcon
+  
+  case object PomodoroComplete
 
   case class Countdown(remaining: Int)
 
@@ -47,6 +49,11 @@ class MainWindowActor extends Actor {
   }
 
   def mainWindow(uniq: Application, gtkWindow: MainWindow): Receive = {
+    case PomodoroComplete =>
+      gtkWindow.safely {
+        gtkWindow.popUpDialog()
+        gtkWindow.displayNotification()
+      }
     case CloseUI =>
       self ! CloseMainUIWindow
       self ! HideStatusIcon
@@ -62,6 +69,9 @@ class MainWindowActor extends Actor {
     case ActivateStatusIcon =>
       println("got activate")
       countdown ! PomodoroCountdownActor.Start
+      gtkWindow.safely {
+        gtkWindow.displayNotification()
+      }
     case x =>
       println("MainWindowActor <- unknown message " + x)
 
@@ -107,6 +117,13 @@ class MainWindowActor extends Actor {
          * will stop immediately after begin started.
          */
         app.addWindow(mainWin.window);
+        
+        
+        /*
+         * Because we don't start with a top-level window active, we must
+         * use Gtk.Application's hold/release mechanism.
+         */
+        //app.hold()
 
       }
     })

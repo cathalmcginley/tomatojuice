@@ -9,7 +9,6 @@ import org.gnome.notify.Notification
 import org.gnome.notify.Notify
 import tomatojuice.JavaSounds
 
-
 class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
 
   //  val pixbuf = new Pixbuf("src/main/resources/25-red-leds-mixed.png")
@@ -27,8 +26,15 @@ class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
   val statusIcon = new PomodoroCountdownIcon(mainWindowActor)
 
   def activateGui() {
+
     window.present()
 
+  }
+
+  def popUpDialog() {
+    println("showing dialog")
+    window.showAll()
+    window.present()
   }
 
   def hideAndRemoveWindow(uniq: Application) {
@@ -36,11 +42,15 @@ class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
     uniq.removeWindow(window)
   }
 
-
-
   def displayNotification() {
     val note = new Notification("foo", "man", "about")
     note.setTimeout(Notification.NOTIFY_EXPIRES_DEFAULT)
+    note.addAction("alpha", "Beta", new Notification.Action() {
+      def onAction(source: Notification,
+            action :String) {
+        println("action string " + action)
+      }
+    })
     note.show()
     ////playSound()
   }
@@ -65,14 +75,18 @@ class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
   private def buildWindow: Window = {
     val mainVBox = new VBox(false, 0)
 
-    mainVBox.add(new Label("This is a test")) /* HACK */
+    val menu = new MainMenu
 
-    
+    mainVBox.packStart(menu.widget, false, false, 3)
+
     val mainHBox = new HBox(false, 0)
     val nav = new NavigationPane
-    mainHBox.add(nav.widget)
-    mainVBox.add(mainHBox)
-    
+    val testLabel = new Label("test 2") /* HACK */
+
+    val mainHPane = new HPaned(nav.widget, testLabel)
+    mainHPane.setPosition(150)
+    mainVBox.add(mainHPane)
+
     // mainVbox add menubar
 
     ////val mainMenu = new MainMenu()
@@ -85,6 +99,7 @@ class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
     // mainVBox add statusbar
 
     val mainWin = new Window
+    mainWin.hide()
     mainWin.setTitle("TomatoJuice")
     //// mainWin.setIcon(Icons.PalatinaIcon)
 
@@ -94,7 +109,7 @@ class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
     //mainWin.setDefaultSize(1200, 800)
     mainWin.setDefaultSize(800, 600)
     connectWindowDeleteEvent(mainWin)
-    mainWin.showAll
+    //mainWin.showAll
     //// mainWin.setMaximize(true) // just experimenting
     mainWin
   }

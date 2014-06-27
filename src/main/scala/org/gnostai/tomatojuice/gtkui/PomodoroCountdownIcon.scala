@@ -5,7 +5,6 @@ import org.gnome.gtk.StatusIcon
 import org.gnome.gdk.Pixbuf
 import org.gnostai.tomatojuice.ui.MainWindowActor
 
-
 import javax.sound.sampled.AudioSystem
 import java.net.URL
 import javax.sound.sampled.DataLine
@@ -27,20 +26,23 @@ class PomodoroCountdownIcon(mainWindowActor: ActorRef) extends GtkUIFacade {
 
   val status = buildStatusIcon
 
-  
   def showPomodoroMinutesRemaining(remaining: Int) {
     status.setFromPixbuf(pomodoroIcons(remaining))
   }
-  
+
   def showBreakMinutesRemaining(remaining: Int) {
     status.setFromPixbuf(breakIcons(remaining))
   }
-  
+
   def hideIcon() {
     status.setVisible(false)
   }
-  
-    def playSound() {
+
+  def pomodoroComplete() {
+    mainWindowActor ! MainWindowActor.PomodoroComplete
+  }
+
+  def playSound() {
 
     val wav = this.getClass.getResource("/complete.wav")
     println(wav)
@@ -52,7 +54,7 @@ class PomodoroCountdownIcon(mainWindowActor: ActorRef) extends GtkUIFacade {
     clip.open(inputStream)
     clip.start()
   }
-  
+
   private def buildStatusIcon() = {
     val sIcon = new StatusIcon(pomodoroIcons(0))
 

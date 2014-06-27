@@ -29,7 +29,7 @@ class PomodoroCountdownActor(facade: PomodoroCountdownIcon) extends Actor {
 
   import PomodoroCountdownActor._
 
-  val OneMinute = 60 seconds
+  val OneMinute = 500 milliseconds // 60 seconds
   val PomodoroDuration = 25
   val BreakDuration = 5
 
@@ -50,6 +50,7 @@ class PomodoroCountdownActor(facade: PomodoroCountdownIcon) extends Actor {
     case NotifyCompletion =>
       facade.safely {
         facade.playSound()
+        
       }
     case HideIcon =>
       facade.safely {
