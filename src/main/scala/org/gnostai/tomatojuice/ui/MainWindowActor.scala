@@ -10,6 +10,8 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import org.gnome.notify.Notify
 import org.gnostai.tomatojuice.ui.PomodoroCountdownActor
+import org.gnome.gtk.StatusIcon
+import org.gnome.gdk.Pixbuf
 
 object MainWindowActor {
 
@@ -18,9 +20,9 @@ object MainWindowActor {
   case object CloseMainUIWindow
   case object HideStatusIcon
   case object ShutdownUI
-  
-  case object ActivateStatusIcon
-  
+
+  //case object ActivateStatusIcon
+
   case object PomodoroComplete
 
   case class Countdown(remaining: Int)
@@ -43,48 +45,39 @@ class MainWindowActor extends Actor {
   def awaitInit: Receive = {
     case DisplayUI =>
       val (uniq, gtkWin) = buildMainWindow(Array.empty[String])
-      
+
       context.become(mainWindow(uniq, gtkWin))
-      
+
   }
 
   def mainWindow(uniq: Application, gtkWindow: MainWindow): Receive = {
-    case PomodoroComplete =>
-      gtkWindow.safely {
-        gtkWindow.popUpDialog()
-        gtkWindow.displayNotification()
-      }
+
     case CloseUI =>
       self ! CloseMainUIWindow
       self ! HideStatusIcon
       self ! ShutdownUI
-      //      palatinaUi ! PalatinaUI.ShutdownApplication
-        case CloseMainUIWindow =>
-          closeMainUIWindow(uniq, gtkWindow)
-        case HideStatusIcon =>
-          countdown ! PomodoroCountdownActor.HideIcon
-        case ShutdownUI =>
-          shutdownUi(gtkWindow)
-          //context.become(awaitShutdown)
-    case ActivateStatusIcon =>
-      println("got activate")
-      countdown ! PomodoroCountdownActor.Start
-      gtkWindow.safely {
-        gtkWindow.displayNotification()
-      }
+    //      palatinaUi ! PalatinaUI.ShutdownApplication
+    case CloseMainUIWindow =>
+      closeMainUIWindow(uniq, gtkWindow)
+    case HideStatusIcon =>
+      countdown ! PomodoroCountdownActor.HideIcon
+    case ShutdownUI =>
+      shutdownUi(gtkWindow)
+    //context.become(awaitShutdown)
+
     case x =>
       println("MainWindowActor <- unknown message " + x)
 
   }
 
-  var countdown: ActorRef = self  // horrible hack
-  
+  var countdown: ActorRef = self // horrible hack
+
   private def closeMainUIWindow(uniq: Application, gtkWindow: MainWindow) {
     gtkWindow.safely {
       gtkWindow.hideAndRemoveWindow(uniq)
     }
   }
-  
+
   private def shutdownUi(gtkWindow: MainWindow) {
     gtkWindow.safely {
       Gtk.mainQuit()
@@ -92,9 +85,8 @@ class MainWindowActor extends Actor {
     }
     println("shutting down actor system")
     context.system.shutdown
-  } 
-  
-  
+  }
+
   private def buildMainWindow(args: Array[String]) = {
     Gtk.init(args) // see if we can do without
     val mainWin = new MainWindow(self)
@@ -107,18 +99,19 @@ class MainWindowActor extends Actor {
         for (capability <- Notify.getServerCapabilities()) {
           println("Notify:: " + capability)
         }
-        
-        countdown = context.actorOf(Props(new PomodoroCountdownActor(mainWin.statusIcon)), "CountDown")
-        
-        
+
+        //countdown = context.actorOf(Props(new PomodoroCountdownActor(mainWin.statusIcon)), "CountDown")
+
+        val icon = context.actorOf(Props[PomodorStatusIconActor])
+
         Internationalization.init("alexandria", "/usr/share/locale")
         /*
          * IMPORTANT: link the main window to the application, or the application
          * will stop immediately after begin started.
          */
         app.addWindow(mainWin.window);
-        
-        
+
+
         /*
          * Because we don't start with a top-level window active, we must
          * use Gtk.Application's hold/release mechanism.
@@ -131,6 +124,13 @@ class MainWindowActor extends Actor {
     uniqueApplication.connect(new Application.Activate() {
       def onActivate(source: Application) {
         mainWin.activateGui
+        
+        
+                val pixbuf = new Pixbuf("src/main/resources/icons/red-led-on.png")
+        val status = new StatusIcon(pixbuf)
+        status.setVisible(true)
+        println(status.isEmbedded())
+
         //countdown ! PomodoroCountdownActor.StartPomodoro
       }
     })

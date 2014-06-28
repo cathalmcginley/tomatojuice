@@ -11,19 +11,9 @@ import tomatojuice.JavaSounds
 
 class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
 
-  //  val pixbuf = new Pixbuf("src/main/resources/25-red-leds-mixed.png")
-  //  val pixbuf2 = new Pixbuf("src/main/resources/25-red-leds.png")
-  //  val status = new StatusIcon(pixbuf)
-  //  status.setVisible(true)
-  //  status.connect(new StatusIcon.Activate() {
-  //    def onActivate(icon: StatusIcon) {
-  //      println("interaction...")
-  //    }
-  //  })
-
   val window = buildWindow
 
-  val statusIcon = new PomodoroCountdownIcon(mainWindowActor)
+  
 
   def activateGui() {
 
@@ -42,37 +32,17 @@ class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
     uniq.removeWindow(window)
   }
 
-  def displayNotification() {
-    val note = new Notification("foo", "man", "about")
-    note.setTimeout(Notification.NOTIFY_EXPIRES_DEFAULT)
-    note.addAction("alpha", "Beta", new Notification.Action() {
-      def onAction(source: Notification,
-            action :String) {
-        println("action string " + action)
-      }
-    })
-    note.show()
-    ////playSound()
-  }
 
-  //  def displayTimeout(minsRemaining: Int) {
-  //    
-  //    if (minsRemaining == 8) {
-  //      displayNotification()
-  //    }
-  //    
-  //    println(minsRemaining)
-  //    status.setTooltipText(minsRemaining + ":00")
-  //    if (minsRemaining % 2 == 0) {
-  //      status.setFromPixbuf(pixbuf)
-  //    } else {
-  //      status.setFromPixbuf(pixbuf2)
-  //    }
-  //  }
+
+
 
   // ------------- [ private methods ] -------------------
 
   private def buildWindow: Window = {
+    
+    
+    
+    
     val mainVBox = new VBox(false, 0)
 
     val menu = new MainMenu

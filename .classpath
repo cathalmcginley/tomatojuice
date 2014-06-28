@@ -4,7 +4,11 @@
 	<classpathentry kind="src" output="target/scala-2.11/classes" path="src/main/java"/>
 	<classpathentry kind="src" output="target/scala-2.11/test-classes" path="src/test/scala"/>
 	<classpathentry kind="src" output="target/scala-2.11/test-classes" path="src/test/java"/>
-	<classpathentry kind="lib" path="lib/gtk-4.1.jar"/>
+	<classpathentry kind="lib" path="lib/gtk-4.1.jar" sourcepath="/media/SAMSUNG/TransferBackups/Ubuntu_12_10/software/debianista/java-gnome/java-gnome-4.1.1/src/bindings/">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/usr/share/doc/libjava-gnome-java/api/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
 	<classpathentry kind="lib" path="/home/cathal/.ivy2/cache/com.typesafe.akka/akka-actor_2.11/jars/akka-actor_2.11-2.3.3.jar"/>
 	<classpathentry kind="lib" path="/home/cathal/.ivy2/cache/com.typesafe/config/bundles/config-1.2.1.jar"/>

@@ -1,14 +1,14 @@
 package org.gnostai.tomatojuice.gtkui
 
 import akka.actor.ActorRef
-import org.gnome.gtk.StatusIcon
-import org.gnome.gdk.Pixbuf
+import org.gnome.gtk
+import org.gnome.gdk
 import org.gnostai.tomatojuice.ui.MainWindowActor
-
 import javax.sound.sampled.AudioSystem
 import java.net.URL
 import javax.sound.sampled.DataLine
 import javax.sound.sampled.Clip
+import org.gnostai.tomatojuice.ui.PomodorStatusIconActor
 
 class PomodoroCountdownIcon(mainWindowActor: ActorRef) extends GtkUIFacade {
   private val countdownImages = Seq("00.png",
@@ -21,8 +21,8 @@ class PomodoroCountdownIcon(mainWindowActor: ActorRef) extends GtkUIFacade {
   private val pomodoroNotificationDir = "/home/cathal/Pictures/pomodoro-tomatojuice/smaller"
   private val breakNotificationDir = "/home/cathal/Pictures/pomodoro-tomatojuice/green/smaller"
 
-  private val pomodoroIcons = countdownImages.map(n => new Pixbuf(pomodoroNotificationDir + "/" + n))
-  private val breakIcons = countdownImages.take(6).map(n => new Pixbuf(breakNotificationDir + "/" + n))
+  private val pomodoroIcons = countdownImages.map(n => new gdk.Pixbuf(pomodoroNotificationDir + "/" + n))
+  private val breakIcons = countdownImages.take(6).map(n => new gdk.Pixbuf(breakNotificationDir + "/" + n))
 
   val status = buildStatusIcon
 
@@ -56,13 +56,14 @@ class PomodoroCountdownIcon(mainWindowActor: ActorRef) extends GtkUIFacade {
   }
 
   private def buildStatusIcon() = {
-    val sIcon = new StatusIcon(pomodoroIcons(0))
+    val sIcon = new gtk.StatusIcon(pomodoroIcons(0))
 
     sIcon.setVisible(true)
-    sIcon.connect(new StatusIcon.Activate() {
-      def onActivate(icon: StatusIcon) {
+    println(sIcon.isEmbedded())
+    sIcon.connect(new gtk.StatusIcon.Activate() {
+      def onActivate(icon: gtk.StatusIcon) {
         println("activate")
-        mainWindowActor ! MainWindowActor.ActivateStatusIcon
+        mainWindowActor ! PomodorStatusIconActor.Start
       }
     })
     sIcon

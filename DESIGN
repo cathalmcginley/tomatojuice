@@ -1,0 +1,22 @@
+TomatoJuice is built around an Akka actor system. We start up the
+system, and create the main UI actor. All UI interactions are
+translated into actor messages.
+
+The low-level UI is Gtk+, accessed via Java-GNOME. But every logical
+component of the program is wrapped by a GtkUI Facade. Methods on this
+layer are coarse-grained, like "display the Note dialog" or "pop up
+the status icon menu".
+
+The UI Facade itself will be an abstract layer above the Gtk
+implementation.
+
+Above that layer, we have the UI Actors layer. Actors in this layer
+will create other actors, and also call the UI Facade layer to create
+the UI. Objects in the UI Facade layer will *occasionally* create
+subordinate facade objects, but these will all communicate with the
+same actor the first facade object was created with.
+
+The UI Facade layer *never* creates its own actors; it will always
+have been created by an actor, and will communicate back with that
+actor via messages.
+

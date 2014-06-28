@@ -15,3 +15,4 @@ libraryDependencies ++= List(
   "mysql" % "mysql-connector-java" % "5.1.31"
 )
 
+excludeFilter in unmanagedJars in Compile := "libgtkjni-4.1.3.so"

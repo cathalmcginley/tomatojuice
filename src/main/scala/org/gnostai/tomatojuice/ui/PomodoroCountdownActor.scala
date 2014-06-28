@@ -4,11 +4,12 @@ import akka.actor._
 import scala.concurrent.duration._
 import org.gnostai.tomatojuice.gtkui.PomodoroCountdownIcon
 import scala.concurrent.Future
+import org.gnostai.tomatojuice.gtkui.PomodoroStatusIcon
 
 object PomodoroCountdownActor {
 
   case object Start
-  
+
   case object StartPomodoro
   case class CountDownPomodoro(minsRemaining: Int)
   case object FinishedPomodoro
@@ -16,13 +17,51 @@ object PomodoroCountdownActor {
   case object StartBreak
   case class CountDownBreak(minsRemaining: Int)
 
-  
   case object FinishedBreak
-  
+
   case object NotifyCompletion
 
   case object HideIcon
-  
+
+}
+
+object PomodorStatusIconActor {
+
+  case object Start
+
+  case object ActivateStatusIcon
+  case object PomodoroComplete
+
+}
+
+class PomodorStatusIconActor extends Actor {
+
+  import PomodorStatusIconActor._
+
+  var icon: PomodoroStatusIcon = _
+
+  override def preStart() {
+    icon = new PomodoroStatusIcon(self)
+  }
+
+  override def receive = waitForStart
+
+  def waitForStart: Receive = {
+    case Start =>
+      val countdown = context.actorOf(Props(new PomodoroCountdownActor(new PomodoroCountdownIcon(self))))
+      context.become(countdownRunning(countdown))
+  }
+
+  def countdownRunning(countdown: ActorRef): Receive = {
+    case ActivateStatusIcon =>
+      println("got activate")
+      countdown ! PomodoroCountdownActor.Start
+
+    case PomodoroComplete =>
+      icon.safely {
+        icon.displayNotification()
+      }
+  }
 }
 
 class PomodoroCountdownActor(facade: PomodoroCountdownIcon) extends Actor {
@@ -50,7 +89,7 @@ class PomodoroCountdownActor(facade: PomodoroCountdownIcon) extends Actor {
     case NotifyCompletion =>
       facade.safely {
         facade.playSound()
-        
+
       }
     case HideIcon =>
       facade.safely {
@@ -59,11 +98,11 @@ class PomodoroCountdownActor(facade: PomodoroCountdownIcon) extends Actor {
   }
 
   def awaitingCountDownPomodoro: Receive = {
-    case Start => 
+    case Start =>
       context.become(resetTimer orElse countDownPomodoro)
       self ! CountDownPomodoro(PomodoroDuration)
   }
-  
+
   def countDownPomodoro: Receive = {
     case Start =>
       println("Pomodoro:: ignoring re-Start")
@@ -90,11 +129,11 @@ class PomodoroCountdownActor(facade: PomodoroCountdownIcon) extends Actor {
   }
 
   def awaitingCountDownBreak: Receive = {
-    case Start => 
+    case Start =>
       context.become(resetTimer orElse countDownBreak)
       self ! CountDownBreak(BreakDuration)
   }
-  
+
   def countDownBreak: Receive = {
     case Start =>
       println("Break:: ignoring re-Start")
