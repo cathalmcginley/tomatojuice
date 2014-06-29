@@ -5,10 +5,16 @@ import scala.concurrent.Future
 
 trait StatusIconModule extends UIFacadeModule {
 
+  sealed trait CountdownType
+  case object PomodoroCountdown extends CountdownType
+  case object ShortBreakCountdown extends CountdownType
+  case object LongBreakCountdown extends CountdownType
+  
   case class DisplayInitialStatusIcon(handle: GUI_HANDLE) extends Message
   case object StatusIconActivated extends Message
   case object HideStatusIcon extends Message
   
+
   
   abstract class StatusIconFacade extends UIFacade {
     
@@ -19,7 +25,7 @@ trait StatusIconModule extends UIFacadeModule {
     def longBreakBegins(): Unit
     
     
-    def showMinutesRemaining(minutesRemaining: Int)
+    def showMinutesRemaining(minutesRemaining: Int, countdown: CountdownType)
     
     def hintTimeRemaining(minutes: Int, seconds: Int)
     

@@ -36,8 +36,31 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
       println("longBreakBegins(): NO ACTION")
     }
 
-    def showMinutesRemaining(minutesRemaining: Int) {
+    def showMinutesRemaining(minutesRemaining: Int, countdown: CountdownType) {
       println("showMinutesRemaining(): NO ACTION")
+      val icon = iconFor(minutesRemaining, countdown)
+      safely {
+        statusIcon.setFromPixbuf(icon)
+      }
+    }
+    
+    
+
+    private def iconFor(index: Int, countdown: CountdownType) = {
+      val icons = iconsForCountdown(countdown)
+      if (index < icons.size) {
+        icons(index)
+      } else {
+        icons(0)
+      }
+    }
+    
+    private def iconsForCountdown(countdown: CountdownType): Seq[gdk.Pixbuf] = {
+      countdown match {
+        case PomodoroCountdown => icons.pomodoroIcons
+        case ShortBreakCountdown => icons.breakIcons
+        case LongBreakCountdown => icons.pomodoroIcons // HACK
+      }
     }
 
     def hintTimeRemaining(minutes: Int, seconds: Int) {
