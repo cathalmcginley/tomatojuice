@@ -11,16 +11,9 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
 
   class GtkStatusIconFacade(iconActor: ActorRef, handle: GUI_HANDLE) extends StatusIconFacade {
 
-    println("> what now... 1 ?")
-
     val ImageDir = "src/main/resources/icons"
 
-    println("> what now... 2 ?")
-
     val icons = new PomodoroIcons(ImageDir)
-
-    println("> what now... 3 ?")
-    println("> what now...?")
 
     val statusIcon: gtk.StatusIcon = buildStatusIcon
 

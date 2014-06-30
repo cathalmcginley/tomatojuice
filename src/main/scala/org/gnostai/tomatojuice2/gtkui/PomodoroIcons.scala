@@ -4,27 +4,24 @@ import org.gnome.gdk
 
 class PomodoroIcons(baseDir: String) {
 
-  println("PomodoroIcons")
+  private def iconNamesFrom(min: Int, max: Int) = {
+    for (index <- min to max) yield f"$index%02d.png"
+  }
   
-    private val countdownImages = Seq("00.png",
-    "01.png", "02.png", "03.png", "04.png", "05.png",
-    "06.png", "07.png", "08.png", "09.png", "10.png",
-    "11.png", "12.png", "13.png", "14.png", "15.png",
-    "16.png", "17.png", "18.png", "19.png", "20.png",
-    "21.png", "22.png", "23.png", "24.png", "25.png")
+  /* @glib_unsafe */
+  private def iconsFrom(min: Int, max: Int, baseDir: String) = {
+    iconNamesFrom(min, max).map(name => new gdk.Pixbuf(baseDir + "/" + name))
+  }
 
-  private val pomodoroNotificationDir = baseDir + "/pomodoro-red"
-  private val breakNotificationDir = baseDir + "/break-green"
+  private val pomodoroNotificationDir = baseDir + "/" + "pomodoro-red"
+  private val breakNotificationDir = baseDir + "/" + "break-green"
 
-  println(pomodoroNotificationDir)
-  
-  val pomodoroIcons = countdownImages.map(n => new gdk.Pixbuf(pomodoroNotificationDir + "/" + n))
-  
-  println("got pomodoro icons")
-  val breakIcons = countdownImages.take(6).map(n => new gdk.Pixbuf(breakNotificationDir + "/" + n))
-  
-  
+  /* @glib_unsafe */
+  val pomodoroIcons = iconsFrom(0, 25, pomodoroNotificationDir)
+
+  /* @glib_unsafe */
+  val breakIcons = iconsFrom(0, 25, breakNotificationDir)
 
   val initial = pomodoroIcons(0)
-  
+
 }

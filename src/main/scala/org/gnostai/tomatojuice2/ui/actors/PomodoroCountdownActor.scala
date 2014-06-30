@@ -18,7 +18,7 @@ trait PomodoroCountdownActorModule extends UIFacadeModule {
 
     val statusIconActor = context.parent
     
-    private val OneMinute = 500 milliseconds // 60 seconds   
+    private val OneMinute = 1 minute // 500 milliseconds // 60 seconds   
 
     def receive = timerInactive
 
