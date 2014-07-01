@@ -5,6 +5,9 @@ import akka.actor._
 trait PersistModule  extends PomodoroPersistModule {
 
   case object RecordPomodoroStart
+  case class RecordPomodoroCompleted(pomodoroId: POMODORO_ID)
+  
+
   
   def createDBMainActor(context: ActorContext, name: String): ActorRef
   
@@ -14,6 +17,8 @@ trait PersistModule  extends PomodoroPersistModule {
 
     override def receive: Receive = {
       case RecordPomodoroStart =>
+        pomodoroActor ! CreateNewPomodoro(25, sender)
+      case RecordPomodoroCompleted(id) =>
         pomodoroActor ! CreateNewPomodoro(25, sender)
       case PomodoroCreated =>
         log.info("created")

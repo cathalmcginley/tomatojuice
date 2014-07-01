@@ -21,7 +21,7 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule with StatusIcon
     
     private def minutesToCountDown(countdown: CountdownType) = {
       countdown match {
-        case PomodoroCountdown => 7
+        case PomodoroCountdown => 2
         case ShortBreakCountdown => 5
         case LongBreakCountdown => 25
       }
@@ -58,6 +58,11 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule with StatusIcon
       case TimerCompleted =>
         iconFacade.showMinutesRemaining(0, countdown)
         iconFacade.timerCompleted()                
+        
+        
+        val mainApp = context.actorSelection("../..")
+        log.info(" >>> " + mainApp)
+        mainApp ! "CompletedPomodoro"
         context.become(timerInactive(iconFacade, nextCountdownFor(countdown)))
         implicit val disp = context.system.dispatcher
         for (facade <- audio) { facade.playPomodoroCompletedSound() }

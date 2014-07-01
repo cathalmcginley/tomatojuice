@@ -6,8 +6,11 @@ import scala.concurrent.Future
 
 trait PomodoroPersistModule {
   
+  type POMODORO_ID 
+    
   case class CreateNewPomodoro(durationMinutes: Int, origSender: ActorRef)
-  case class PomodoroCreated(pomodoroId: Int)
+  case class PomodoroCreated(pomodoroId: POMODORO_ID)
+  case class PomodoroCompleted(pomodoroId: POMODORO_ID)
   case object Continue
   
   
@@ -30,10 +33,16 @@ trait PomodoroPersistModule {
         implicit val dispatcher = context.system.dispatcher
         val origSender = sender
         context.become(busy)
-        asyncRecordNewPomodoro(mins, origSender) map { _ => Continue } pipeTo self
+        asyncRecordNewPomodoro(mins, origSender) map { _ => Continue } pipeTo self        
+      case PomodoroCompleted(id) =>
+        implicit val dispatcher = context.system.dispatcher
+        val origSender = sender
+        context.become(busy)
+        asyncMarkPomodoroCompleted(id) map { _ => Continue } pipeTo self
+    
     }
 
     def asyncRecordNewPomodoro(duration: Int, origSender: ActorRef): Future[Int]
-    
+    def asyncMarkPomodoroCompleted(id: POMODORO_ID): Future[Boolean]
   }
 }
