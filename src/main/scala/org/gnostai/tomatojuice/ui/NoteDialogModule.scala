@@ -12,6 +12,6 @@ trait NoteDialogModule extends UIFacadeModule {
   
   type POMODORO_NOTE_DIALOG <: PomodoroNodeDialogFacade
   
-  def createNoteDialog(handle: ApplicationHandle): Future[PomodoroNodeDialogFacade]
+  def createNoteDialog(handle: ApplicationHandle): Future[POMODORO_NOTE_DIALOG]
   
 }

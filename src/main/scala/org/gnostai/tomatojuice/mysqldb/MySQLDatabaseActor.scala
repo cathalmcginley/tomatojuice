@@ -1,17 +1,17 @@
 package org.gnostai.tomatojuice.mysqldb
 
-import org.gnostai.tomatojuice.db.actors.TomatoJuiceDatabaseModule
+import org.gnostai.tomatojuice.db.actors.DatabaseModule
 import org.gnostai.tomatojuice.db.actors.BoneConnectionPoolExtension
 import akka.actor.Props
 import akka.actor.ActorContext
 
-trait TomatoJuiceMySQLDBMainModule extends TomatoJuiceDatabaseModule {
+trait MySQLDatabaseModule extends DatabaseModule {
   
   def createDBMainActor(context: ActorContext, name: String) = {
-    context.actorOf(Props(new TomatoJuiceMySQLDBMain), name)
+    context.actorOf(Props(new MySQLDatabaseActor), name)
   }
   
-  class TomatoJuiceMySQLDBMain extends TomatoJuiceDBMain {
+  class MySQLDatabaseActor extends DatabaseActor {
 
     val connectionPoolExt = BoneConnectionPoolExtension(context.system)
 

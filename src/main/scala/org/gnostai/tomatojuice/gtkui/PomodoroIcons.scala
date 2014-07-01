@@ -10,7 +10,10 @@ class PomodoroIcons(baseDir: String) {
   
   /* @glib_unsafe */
   private def iconsFrom(min: Int, max: Int, baseDir: String) = {
-    iconNamesFrom(min, max).map(name => new gdk.Pixbuf(baseDir + "/" + name))
+    println(max + "  " + baseDir)
+    val icons = iconNamesFrom(min, max).map(name => new gdk.Pixbuf(baseDir + "/" + name))
+    println("done")
+    icons
   }
 
   private val pomodoroNotificationDir = baseDir + "/" + "pomodoro-red"
@@ -20,7 +23,7 @@ class PomodoroIcons(baseDir: String) {
   val pomodoroIcons = iconsFrom(0, 25, pomodoroNotificationDir)
 
   /* @glib_unsafe */
-  val breakIcons = iconsFrom(0, 25, breakNotificationDir)
+  val breakIcons = iconsFrom(0, 5, breakNotificationDir)
 
   val initial = pomodoroIcons(0)
 

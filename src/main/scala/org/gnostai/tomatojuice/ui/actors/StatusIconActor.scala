@@ -3,21 +3,25 @@ package org.gnostai.tomatojuice.ui.actors
 import akka.actor._
 import org.gnostai.tomatojuice.ui.StatusIconModule
 import scala.concurrent.Future
+import org.gnostai.tomatojuice.ui.AudioNotificationModule
 
-trait StatusIconActorModule extends PomodoroCountdownActorModule with StatusIconModule  {
+trait StatusIconActorModule extends PomodoroCountdownActorModule with StatusIconModule with AudioNotificationModule {
   
   //case class DisplayMinutesRemaining(remaining: Int, timer: CountdownType) extends Message
   //case class CountdownFinished(timer: CountdownType) extends Message
   
   class StatusIconActor extends Actor with ActorLogging {
 
-    val countdownActor = context.actorOf(Props(new PomodoroCountdownActor)) 
+    val countdownActor = context.actorOf(Props(new PomodoroCountdownActor))
+    
+    
+    val audio = createAudioNotification()
     
     def receive = notInitialized
     
     private def minutesToCountDown(countdown: CountdownType) = {
       countdown match {
-        case PomodoroCountdown => 25
+        case PomodoroCountdown => 7
         case ShortBreakCountdown => 5
         case LongBreakCountdown => 25
       }
@@ -39,6 +43,13 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule with StatusIcon
         log.info("activated - TODO start " + nextCountdown + " timer or whatever")
         context.become(countingDown(iconFacade, nextCountdown))
         countdownActor ! StartCountdown(minutesToCountDown(nextCountdown))
+        
+        val mainApp = context.actorSelection("../..")
+        log.info(" >>> " + mainApp)
+        mainApp ! "StartPomodoro"
+        
+        implicit val disp = context.system.dispatcher
+        for (facade <- audio) { facade.playInitialPomodoroSound() }
     } 
     
     def countingDown(iconFacade: STATUS_ICON, countdown: CountdownType): Receive = {
@@ -46,9 +57,10 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule with StatusIcon
         iconFacade.showMinutesRemaining(mins, countdown)
       case TimerCompleted =>
         iconFacade.showMinutesRemaining(0, countdown)
-        iconFacade.timerCompleted()
+        iconFacade.timerCompleted()                
         context.become(timerInactive(iconFacade, nextCountdownFor(countdown)))
-        
+        implicit val disp = context.system.dispatcher
+        for (facade <- audio) { facade.playPomodoroCompletedSound() }
     }
     
     private def nextCountdownFor(countdown: CountdownType) = {

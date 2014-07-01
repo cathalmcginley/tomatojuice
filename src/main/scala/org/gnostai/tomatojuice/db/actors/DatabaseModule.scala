@@ -6,22 +6,21 @@ import akka.actor.Props
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.ActorContext
+import org.gnostai.tomatojuice.persist.PersistModule
 
-trait TomatoJuiceDatabaseModule extends PomodoroDatabaseActorModule {
+trait DatabaseModule extends PersistModule with PomodoroDatabaseModule {
 
-  case object RecordPomodoroStart
+  
   
   def createDBMainActor(context: ActorContext, name: String): ActorRef
   
-  abstract class TomatoJuiceDBMain extends Actor with ActorLogging {
+  abstract class DatabaseActor extends PersistActor {
 
     def pomodoroActor: ActorRef
 
     override def receive: Receive = {
       case RecordPomodoroStart =>
-        log.info("create, before send")
         pomodoroActor ! CreateNewPomodoro(25, sender)
-        log.info("create, after send")
       case PomodoroCreated =>
         log.info("created")
     }

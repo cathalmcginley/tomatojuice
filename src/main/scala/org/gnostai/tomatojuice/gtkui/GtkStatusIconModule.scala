@@ -36,8 +36,6 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
         statusIcon.setFromPixbuf(icon)
       }
     }
-    
-    
 
     private def iconFor(index: Int, countdown: CountdownType) = {
       val icons = iconsForCountdown(countdown)
@@ -47,7 +45,7 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
         icons(0)
       }
     }
-    
+
     private def iconsForCountdown(countdown: CountdownType): Seq[gdk.Pixbuf] = {
       countdown match {
         case PomodoroCountdown => icons.pomodoroIcons
@@ -115,15 +113,14 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
     //        // ^^ TEMP REMOVE ^^
     //    }
 
-
-
     import scala.concurrent.ExecutionContext.Implicits.global
     val facadePromise = Promise[STATUS_ICON]
-    Future {
-      safely {
-        val iconFacade = new GtkStatusIconFacade(iconActor, handle)
-        facadePromise success (iconFacade)
-      }
+
+    safely {
+      println("foo....")
+      val iconFacade = new GtkStatusIconFacade(iconActor, handle)
+      println("icon facade " + iconFacade)
+      facadePromise success (iconFacade)
     }
 
     facadePromise.future
