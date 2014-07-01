@@ -1,6 +1,6 @@
-package org.gnostai.tomatojuice2.db.actors
+package org.gnostai.tomatojuice.db.actors
 
-import org.gnostai.tomatojuice2.db.BoneConnectionPool
+import org.gnostai.tomatojuice.db.BoneConnectionPool
 
 import akka.actor.ExtendedActorSystem
 import akka.actor.Extension

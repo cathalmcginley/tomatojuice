@@ -1,4 +1,4 @@
-package org.gnostai.tomatojuice2.ui
+package org.gnostai.tomatojuice.ui
 
 import akka.actor.ActorRef
 import scala.concurrent.Future

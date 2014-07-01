@@ -1,4 +1,4 @@
-package org.gnostai.tomatojuice2.ui
+package org.gnostai.tomatojuice.ui
 
 import scala.concurrent.Future
 

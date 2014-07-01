@@ -1,4 +1,4 @@
-package org.gnostai.tomatojuice2.db
+package org.gnostai.tomatojuice.db
 
 import com.jolbox.bonecp.BoneCPDataSource
 

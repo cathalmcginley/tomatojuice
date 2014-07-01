@@ -1,8 +1,8 @@
-package org.gnostai.tomatojuice2.gtkui
+package org.gnostai.tomatojuice.gtkui
 
 
 import org.gnome.gtk
-import org.gnostai.tomatojuice2.ui.UIFacadeModule
+import org.gnostai.tomatojuice.ui.UIFacadeModule
 import org.gnome.notify.Notify
 import org.gnome.glib.ApplicationFlags
 import org.freedesktop.bindings.Internationalization
@@ -32,7 +32,7 @@ trait GtkUIFacadeModule extends UIFacadeModule {
   override def initializeGui(system: ActorSystem, mainApp: ActorRef): GUI_HANDLE = {
     println("initialize gui")
     gtk.Gtk.init(Array()) // TODO see if we need any args here 
-    val uniqueApplication = new gtk.Application("org.gnostai.tomatojuice2", 
+    val uniqueApplication = new gtk.Application("org.gnostai.tomatojuice", 
         ApplicationFlags.NONE);
 
     uniqueApplication.connect(new gtk.Application.Startup() {

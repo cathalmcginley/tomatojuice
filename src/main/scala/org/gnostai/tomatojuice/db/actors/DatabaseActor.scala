@@ -1,17 +1,17 @@
-package org.gnostai.tomatojuice2.db.actors
+package org.gnostai.tomatojuice.db.actors
 
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.actor.ActorLogging
 
-class DatabaseActor extends Actor with ActorLogging with PomodoroDbActorModule {
+class DatabaseActor extends Actor with ActorLogging with PomodoroDatabaseActorModule {
   
   val connectionPoolExt = BoneConnectionPoolExtension(context.system)
   
   val conn = connectionPoolExt.pool.getConnection()
   
-  val pomodoroActor = context.actorOf(Props(new PomodoroDbActor(conn)))
+  val pomodoroActor = context.actorOf(Props(new PomodoroDatabaseActor(conn)))
   
   override def receive: Receive = {
     case "get" =>
@@ -26,7 +26,7 @@ class DatabaseActor extends Actor with ActorLogging with PomodoroDbActorModule {
       //conn.close()
     case "create" =>
       log.info("create, before send")
-      pomodoroActor ! CreateNewPomodoro(25)
+      pomodoroActor ! CreateNewPomodoro(25, sender)
       log.info("create, after send")
     case PomodoroCreated =>
       log.info("created")

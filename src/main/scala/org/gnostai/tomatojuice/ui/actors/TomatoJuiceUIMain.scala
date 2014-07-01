@@ -1,16 +1,16 @@
-package org.gnostai.tomatojuice2.ui.actors
+package org.gnostai.tomatojuice.ui.actors
 
 import akka.actor._
 import scala.concurrent.Future
 
 
-trait TomatoJuiceMainModule extends StatusIconActorModule {
+trait TomatoJuiceUIMainModule extends StatusIconActorModule {
 
   case object StartUp
 
-  class TomatoJuiceMain extends Actor with ActorLogging {
+  class TomatoJuiceUIMain extends Actor with ActorLogging {
 
-    val statusIcon = context.actorOf(Props(new StatusIconActor), "TomatoJuice")
+    val statusIcon = context.actorOf(Props(new StatusIconActor), "PomodoroCountdownIcon")
     
     def receive: Receive = {
       case StartUp =>

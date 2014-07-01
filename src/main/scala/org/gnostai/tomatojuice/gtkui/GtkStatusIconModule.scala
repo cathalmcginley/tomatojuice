@@ -1,6 +1,6 @@
-package org.gnostai.tomatojuice2.gtkui
+package org.gnostai.tomatojuice.gtkui
 
-import org.gnostai.tomatojuice2.ui.StatusIconModule
+import org.gnostai.tomatojuice.ui.StatusIconModule
 import org.gnome.gdk
 import org.gnome.gtk
 import akka.actor.ActorRef

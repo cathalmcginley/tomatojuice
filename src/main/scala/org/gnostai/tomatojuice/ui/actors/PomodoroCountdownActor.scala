@@ -1,10 +1,10 @@
-package org.gnostai.tomatojuice2.ui.actors
+package org.gnostai.tomatojuice.ui.actors
 
 import akka.actor._
-import org.gnostai.tomatojuice2.ui.StatusIconModule
+import org.gnostai.tomatojuice.ui.StatusIconModule
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import org.gnostai.tomatojuice2.ui.UIFacadeModule
+import org.gnostai.tomatojuice.ui.UIFacadeModule
 
 trait PomodoroCountdownActorModule extends UIFacadeModule {
 

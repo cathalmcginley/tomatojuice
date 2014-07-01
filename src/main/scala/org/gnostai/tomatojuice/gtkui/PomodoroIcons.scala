@@ -1,4 +1,4 @@
-package org.gnostai.tomatojuice2.gtkui
+package org.gnostai.tomatojuice.gtkui
 
 import org.gnome.gdk
 
