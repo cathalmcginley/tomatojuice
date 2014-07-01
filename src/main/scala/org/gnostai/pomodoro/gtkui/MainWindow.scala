@@ -1,8 +1,8 @@
-package org.gnostai.tomatojuice.gtkui
+package org.gnostai.pomodoro.gtkui
 
 import akka.actor.ActorRef
 import org.gnome.gtk._
-import org.gnostai.tomatojuice.ui.MainWindowActor
+
 import org.gnome.gdk.Event
 import org.gnome.gdk.Pixbuf
 import org.gnome.notify.Notification
@@ -90,7 +90,7 @@ class MainWindow(mainWindowActor: ActorRef) extends GtkUIFacade {
     w.connect(new Window.DeleteEvent() {
       def onDeleteEvent(source: Widget, event: Event): Boolean = {
         println("got Window.DeleteEvent")
-        mainWindowActor ! MainWindowActor.CloseUI
+        mainWindowActor ! "HACK MainWindowActor.CloseUI"
         false
       }
     })

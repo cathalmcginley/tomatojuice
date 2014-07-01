@@ -1,4 +1,4 @@
-package org.gnostai.tomatojuice.db
+package org.gnostai.pomodoro.db
 
 
 import java.sql.Connection

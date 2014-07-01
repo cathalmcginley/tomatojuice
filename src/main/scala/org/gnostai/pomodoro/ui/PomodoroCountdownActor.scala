@@ -1,10 +1,10 @@
-package org.gnostai.tomatojuice.ui
+package org.gnostai.pomodoro.ui
 
 import akka.actor._
 import scala.concurrent.duration._
-import org.gnostai.tomatojuice.gtkui.PomodoroCountdownIcon
+import org.gnostai.pomodoro.gtkui.PomodoroCountdownIcon
 import scala.concurrent.Future
-import org.gnostai.tomatojuice.gtkui.PomodoroStatusIcon
+import org.gnostai.pomodoro.gtkui.PomodoroStatusIcon
 
 object PomodoroCountdownActor {
 

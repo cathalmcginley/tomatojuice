@@ -1,4 +1,4 @@
-package org.gnostai.tomatojuice.gtkui
+package org.gnostai.pomodoro.gtkui
 
 import org.gnome.gtk._
 import org.gnome.gdk.Pixbuf

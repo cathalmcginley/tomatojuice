@@ -1,14 +1,15 @@
-package org.gnostai.tomatojuice.gtkui
+package org.gnostai.pomodoro.gtkui
 
 import akka.actor.ActorRef
 import org.gnome.gtk
 import org.gnome.gdk
-import org.gnostai.tomatojuice.ui.MainWindowActor
 import javax.sound.sampled.AudioSystem
 import java.net.URL
 import javax.sound.sampled.DataLine
 import javax.sound.sampled.Clip
-import org.gnostai.tomatojuice.ui.PomodorStatusIconActor
+
+
+// NOT YET RE-IMPLEMENTED playSound()
 
 class PomodoroCountdownIcon(mainWindowActor: ActorRef) extends GtkUIFacade {
   private val countdownImages = Seq("00.png",
@@ -39,7 +40,7 @@ class PomodoroCountdownIcon(mainWindowActor: ActorRef) extends GtkUIFacade {
   }
 
   def pomodoroComplete() {
-    mainWindowActor ! MainWindowActor.PomodoroComplete
+    mainWindowActor ! "HACK MainWindowActor.PomodoroComplete"
   }
 
   def playSound() {
@@ -63,7 +64,7 @@ class PomodoroCountdownIcon(mainWindowActor: ActorRef) extends GtkUIFacade {
     sIcon.connect(new gtk.StatusIcon.Activate() {
       def onActivate(icon: gtk.StatusIcon) {
         println("activate")
-        mainWindowActor ! PomodorStatusIconActor.Start
+        mainWindowActor ! "HACK PomodorStatusIconActor.Start"
       }
     })
     sIcon

@@ -1,13 +1,14 @@
-package org.gnostai.tomatojuice.gtkui
+package org.gnostai.pomodoro.gtkui
 
 import akka.actor.ActorRef
 import org.gnome.gtk._
-import org.gnostai.tomatojuice.ui.MainWindowActor
 import org.gnome.gdk.Event
 import org.gnome.gdk.Pixbuf
 import org.gnome.notify.Notification
 import org.gnome.notify.Notify
 import tomatojuice.JavaSounds
+
+// NOT YET RE-IMPLEMENTED
 
 class PomodoroStatusIcon(statusActor: ActorRef) extends GtkUIFacade {
 

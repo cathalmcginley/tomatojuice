@@ -1,15 +1,15 @@
-package org.gnostai.tomatojuice.ui
+package org.gnostai.pomodoro.ui
 
 import akka.actor._
 import org.gnome.gtk.Application
-import org.gnostai.tomatojuice.gtkui.MainWindow
+import org.gnostai.pomodoro.gtkui.MainWindow
 import org.gnome.gtk.Gtk
 import org.gnome.glib.ApplicationFlags
 import org.freedesktop.bindings.Internationalization
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import org.gnome.notify.Notify
-import org.gnostai.tomatojuice.ui.PomodoroCountdownActor
+import org.gnostai.pomodoro.ui.PomodoroCountdownActor
 import org.gnome.gtk.StatusIcon
 import org.gnome.gdk.Pixbuf
 

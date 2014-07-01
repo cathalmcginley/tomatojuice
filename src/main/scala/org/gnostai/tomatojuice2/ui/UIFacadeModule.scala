@@ -13,6 +13,10 @@ trait UIFacadeModule {
   
   type GUI_HANDLE
   
+  case class ApplicationHandle(system: ActorSystem,
+      mainApp: ActorRef,
+      guiHandle: GUI_HANDLE)
+  
   def initializeGui(system: ActorSystem, mainApp: ActorRef): GUI_HANDLE   
   
   def shutdownGui(mainApp: ActorRef, handle: GUI_HANDLE)

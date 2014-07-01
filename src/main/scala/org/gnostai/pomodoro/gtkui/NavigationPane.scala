@@ -1,4 +1,4 @@
-package org.gnostai.tomatojuice.gtkui
+package org.gnostai.pomodoro.gtkui
 
 import org.gnome.gtk._
 import org.gnome.gdk.Pixbuf
@@ -6,7 +6,7 @@ import org.gnome.gdk.Pixbuf
 trait WidgetManager {
   protected[gtkui] def widget: Widget
 }
-
+// NOT YET RE-IMPLEMENTED
 
 class NavigationPane extends WidgetManager {
 
