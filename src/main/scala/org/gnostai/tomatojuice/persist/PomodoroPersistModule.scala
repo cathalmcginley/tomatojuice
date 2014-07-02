@@ -42,7 +42,7 @@ trait PomodoroPersistModule {
     
     }
 
-    def asyncRecordNewPomodoro(duration: Int, origSender: ActorRef): Future[Int]
+    def asyncRecordNewPomodoro(duration: Int, origSender: ActorRef): Future[POMODORO_ID]
     def asyncMarkPomodoroCompleted(id: POMODORO_ID): Future[Boolean]
   }
 }

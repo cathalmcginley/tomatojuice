@@ -45,7 +45,7 @@ trait PomodoroDatabaseModule extends PomodoroPersistModule {
         log.info("main " + main)
         main ! PomodoroCreated(PomodoroDbId(newId))
       }
-      count
+      PomodoroDbId(count)
     }
 
     override def asyncMarkPomodoroCompleted(id: POMODORO_ID) = Future {
