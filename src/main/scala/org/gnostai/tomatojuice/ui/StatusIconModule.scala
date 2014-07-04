@@ -2,13 +2,9 @@ package org.gnostai.tomatojuice.ui
 
 import akka.actor.ActorRef
 import scala.concurrent.Future
+import org.gnostai.tomatojuice.core.CoreDomainModule
 
-trait StatusIconModule extends UIFacadeModule {
-
-  sealed trait CountdownType
-  case object PomodoroCountdown extends CountdownType
-  case object ShortBreakCountdown extends CountdownType
-  case object LongBreakCountdown extends CountdownType
+trait StatusIconModule extends UIFacadeModule with CoreDomainModule {
   
   case class DisplayInitialStatusIcon(handle: GUI_HANDLE) extends Message
   case object StatusIconActivated extends Message
@@ -25,7 +21,7 @@ trait StatusIconModule extends UIFacadeModule {
     def longBreakBegins(): Unit
     
     
-    def showMinutesRemaining(minutesRemaining: Int, countdown: CountdownType)
+    def showMinutesRemaining(minutesRemaining: Int, countdown: CountdownTimer)
     
     def hintTimeRemaining(minutes: Int, seconds: Int)
     

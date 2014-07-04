@@ -1,14 +1,24 @@
 package org.gnostai.tomatojuice.core
 
+import akka.actor.ActorRef
+
 trait CoreMessagesModule {
   
   object CoreMessages {
     
-    case object StartNewPomodoro
+    /** sent to main app by gui; instruct it to notify the tracker  */
+    case object StartTimer 
     
-    case object ConfirmPomodorCompleted
+    /** sent to main app by tracker; ask main to record this is db */
+    case object NewPomodoroStarted
     
-    case object StartBreak
+    /** sent to main app by gui again; ask main to update db  */
+    case object ConfirmPomodoroCompleted
+    
+    //case object StartBreak
+   
+    
+    case class RegisterPomodoroListener(listener: ActorRef) // HACK
     
   }
 

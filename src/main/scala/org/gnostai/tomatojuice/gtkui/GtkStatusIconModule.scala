@@ -29,7 +29,7 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
       println("longBreakBegins(): NO ACTION")
     }
 
-    def showMinutesRemaining(minutesRemaining: Int, countdown: CountdownType) {
+    def showMinutesRemaining(minutesRemaining: Int, countdown: CountdownTimer) {
       println("showMinutesRemaining(): NO ACTION")
       val icon = iconFor(minutesRemaining, countdown)
       safely {
@@ -37,7 +37,7 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
       }
     }
 
-    private def iconFor(index: Int, countdown: CountdownType) = {
+    private def iconFor(index: Int, countdown: CountdownTimer) = {
       val icons = iconsForCountdown(countdown)
       if (index < icons.size) {
         icons(index)
@@ -46,11 +46,11 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
       }
     }
 
-    private def iconsForCountdown(countdown: CountdownType): Seq[gdk.Pixbuf] = {
+    private def iconsForCountdown(countdown: CountdownTimer): Seq[gdk.Pixbuf] = {
       countdown match {
-        case PomodoroCountdown => icons.pomodoroIcons
-        case ShortBreakCountdown => icons.breakIcons
-        case LongBreakCountdown => icons.pomodoroIcons // HACK
+        case PomodoroCountdownTimer => icons.pomodoroIcons
+        case ShortBreakCountdownTimer => icons.breakIcons
+        case LongBreakCountdownTimer => icons.pomodoroIcons // HACK
       }
     }
 

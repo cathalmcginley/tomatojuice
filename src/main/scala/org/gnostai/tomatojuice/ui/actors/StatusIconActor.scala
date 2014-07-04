@@ -5,84 +5,85 @@ import org.gnostai.tomatojuice.ui.StatusIconModule
 import scala.concurrent.Future
 import org.gnostai.tomatojuice.ui.AudioNotificationModule
 import org.gnostai.tomatojuice.core.CoreMessagesModule
+import org.gnostai.tomatojuice.core.CoreConfigurationModule
+import org.gnostai.tomatojuice.actors.PomodoroTrackerModule
+import akka.event.LoggingReceive
 
-trait StatusIconActorModule extends PomodoroCountdownActorModule 
-with StatusIconModule 
-with AudioNotificationModule 
-with CoreMessagesModule {
-  
-  //case class DisplayMinutesRemaining(remaining: Int, timer: CountdownType) extends Message
-  //case class CountdownFinished(timer: CountdownType) extends Message
-  
-  class StatusIconActor extends Actor with ActorLogging {
+trait StatusIconActorModule extends PomodoroCountdownActorModule
+  with StatusIconModule
+  with AudioNotificationModule
+  with CoreMessagesModule
+  with PomodoroTrackerModule
+  with CoreConfigurationModule {
+
+  class StatusIconActor(mainApp: ActorRef) extends Actor with ActorLogging {
+
+    //val pomodoroConfig = config.getConfig("tomatojuice.pomodoro")
+    val uiConfig = config.getConfig("tomatojuice.ui")
 
     import CoreMessages._
     
+    import PomodoroTracker._
+
     val countdownActor = context.actorOf(Props(new PomodoroCountdownActor))
+
+    mainApp ! RegisterPomodoroListener(self)
     
-    
-    val audio = createAudioNotification()
-    
+    lazy val audio = createAudioNotification()
+
     def receive = notInitialized
-    
-    private def minutesToCountDown(countdown: CountdownType) = {
-      countdown match {
-        case PomodoroCountdown => 2
-        case ShortBreakCountdown => 5
-        case LongBreakCountdown => 25
-      }
-    }
-    
+
     def notInitialized: Receive = {
       case DisplayInitialStatusIcon(handle) =>
         log.info("StatusIconActor got DisplayInitialStatusIcon")
         import context.dispatcher
-        val iconFuture = constructStatusIcon(self, handle) 
+        val iconFuture = constructStatusIcon(self, handle)
         iconFuture onSuccess {
-          case iconFacade => println("! got icon facade " + iconFacade)
-          context.become(timerInactive(iconFacade, PomodoroCountdown))
+          case iconFacade =>
+            println("! got icon facade " + iconFacade)
+            context.become(timerInactive(iconFacade, PomodoroCountdownTimer))
         }
-    }   
+    }
+
+    /**
+     * this is when a countdown timer has finished, but needs to be clicked to
+     * confirm that the pomodoro has been completed...
+     */
+    def timerSuperInactive(iconFacade: STATUS_ICON, nextCountdown: CountdownTimer): Receive = LoggingReceive {
+      case StatusIconActivated =>
+        log.info("activated - TODO start " + nextCountdown + " timer or whatever")
+        context.become(timerInactive(iconFacade, nextCountdown))
+        mainApp ! ConfirmPomodoroCompleted
+
+    }
+
     
-    def timerInactive(iconFacade: STATUS_ICON, nextCountdown: CountdownType): Receive = {
-      case StatusIconActivated => 
+    def timerInactive(iconFacade: STATUS_ICON, nextCountdown: CountdownTimer): Receive = {
+      case StatusIconActivated =>
         log.info("activated - TODO start " + nextCountdown + " timer or whatever")
         context.become(countingDown(iconFacade, nextCountdown))
-        countdownActor ! StartCountdown(minutesToCountDown(nextCountdown))
-        
-        val mainApp = context.actorSelection("../..")
-        log.info(" >>> " + mainApp)
-        mainApp ! StartNewPomodoro
-        
-        implicit val disp = context.system.dispatcher
-        for (facade <- audio) { facade.playInitialPomodoroSound() }
-    } 
-    
-    def countingDown(iconFacade: STATUS_ICON, countdown: CountdownType): Receive = {
-      case MinutesRemaining(mins) =>
-        iconFacade.showMinutesRemaining(mins, countdown)
-      case TimerCompleted =>
-        iconFacade.showMinutesRemaining(0, countdown)
-        iconFacade.timerCompleted()                
-        
-        
-        val mainApp = context.actorSelection("../..")
-        log.info(" >>> " + mainApp)
-        mainApp ! ConfirmPomodorCompleted
-        context.become(timerInactive(iconFacade, nextCountdownFor(countdown)))
-        implicit val disp = context.system.dispatcher
-        for (facade <- audio) { facade.playPomodoroCompletedSound() }
+        mainApp ! StartTimer
+
+        if (uiConfig.getBoolean("soundEffects")) {
+          implicit val disp = context.system.dispatcher
+          for (facade <- audio) { facade.playInitialPomodoroSound() }
+        }
     }
-    
-    private def nextCountdownFor(countdown: CountdownType) = {
-      countdown match {
-        case PomodoroCountdown => ShortBreakCountdown  // TODO intermittent longer breaks
-        case ShortBreakCountdown => PomodoroCountdown
-        case LongBreakCountdown => PomodoroCountdown
-      }
-     
+
+    def countingDown(iconFacade: STATUS_ICON, countdown: CountdownTimer): Receive = {
+      case CountdownMinutesRemaining(timer, mins) =>
+        iconFacade.showMinutesRemaining(mins, timer)
+      case CountdownTimerCompleted(nextTimer) =>        
+        iconFacade.timerCompleted()
+
+        context.become(timerSuperInactive(iconFacade, nextTimer))
+        
+        if (uiConfig.getBoolean("soundEffects")) {
+          implicit val disp = context.system.dispatcher
+          for (facade <- audio) { facade.playPomodoroCompletedSound() }
+        }
     }
-    
+
   }
 
 }

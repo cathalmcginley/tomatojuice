@@ -7,10 +7,11 @@ import scala.concurrent.Future
 trait TomatoJuiceUIMainModule extends StatusIconActorModule {
 
   case object StartUp
+  
 
-  class TomatoJuiceUIMain extends Actor with ActorLogging {
+  class TomatoJuiceUIMain(mainApp: ActorRef) extends Actor with ActorLogging {
 
-    val statusIcon = context.actorOf(Props(new StatusIconActor), "PomodoroCountdownIcon")
+    val statusIcon = context.actorOf(Props(new StatusIconActor(mainApp)), "PomodoroCountdownIcon")
     
     def receive: Receive = {
       case StartUp =>
