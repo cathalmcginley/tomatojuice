@@ -3,12 +3,14 @@ package org.gnostai.tomatojuice.db.actors
 import akka.actor._
 import org.gnostai.tomatojuice.db.QueryToStream
 import java.sql.ResultSet
+import akka.pattern.pipe
 import org.gnostai.tomatojuice.core.CoreDomainModule
 import java.sql.Connection
 import org.gnostai.tomatojuice.persist.ProjectPersistModule
 import scala.concurrent.Future
 import java.sql.Statement
 import java.io.ByteArrayInputStream
+
 
 trait ProjectDatabaseActorModule extends ProjectPersistModule with CoreDomainModule {
 
@@ -24,9 +26,9 @@ trait ProjectDatabaseActorModule extends ProjectPersistModule with CoreDomainMod
       " VALUES (?, ?, ?)"
     lazy val insertStmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)
 
-    override def receive: Receive = {
-      case x =>
-        log.info("unexpected " + x)
+    override def free: Receive = {
+      case ProjectPersist.CreateNewProject(name, description, icon, origSender) =>
+        asyncRecordNewProject(name, description, icon, origSender) map { _ => ProjectPersist.Continue } pipeTo self   
     }
 
     def asyncRecordNewProject(name: String, description: String,

@@ -19,6 +19,8 @@ trait MySQLDatabaseModule extends DatabaseModule {
     
     val pomodoroActor = context.actorOf(Props(new PomodoroDatabaseActor(conn)))
     
+    val projectActor = context.actorOf(Props(new ProjectDatabaseActor(conn)))
+    
   }
 
 }

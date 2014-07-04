@@ -2,10 +2,13 @@ package org.gnostai.tomatojuice.persist
 
 import akka.actor._
 
-trait PersistModule  extends PomodoroPersistModule {
+trait PersistModule  extends PomodoroPersistModule with ProjectPersistModule {
 
   case object RecordPomodoroStart
   case class RecordPomodoroCompleted(pomodoroId: POMODORO_ID)
+  case class RecordNewProject(name: String,
+      description: String,
+      icon: Option[ImageData])
   
 
   

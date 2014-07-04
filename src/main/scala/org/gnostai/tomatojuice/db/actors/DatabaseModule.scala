@@ -9,7 +9,8 @@ import akka.actor.ActorContext
 import org.gnostai.tomatojuice.persist.PersistModule
 import akka.event.LoggingReceive
 
-trait DatabaseModule extends PersistModule with PomodoroDatabaseModule {
+trait DatabaseModule extends PersistModule with PomodoroDatabaseModule 
+with ProjectDatabaseActorModule {
 
   
   
@@ -18,12 +19,15 @@ trait DatabaseModule extends PersistModule with PomodoroDatabaseModule {
   abstract class DatabaseActor extends PersistActor {
 
     def pomodoroActor: ActorRef
+    def projectActor: ActorRef
 
     override def receive: Receive = LoggingReceive {
       case RecordPomodoroStart =>
         pomodoroActor ! CreateNewPomodoro(25, sender)
       case RecordPomodoroCompleted(id) =>
         pomodoroActor ! PomodoroCompleted(id)
+      case RecordNewProject(name, description, icon) =>
+        projectActor ! "..."
     }
 
   }
