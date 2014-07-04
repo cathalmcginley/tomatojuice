@@ -11,50 +11,46 @@ trait TomatoJuiceMainModule extends CoreMessagesModule with PomodoroTrackerModul
 
   this: TomatoJuiceUIMainModule with PersistModule =>
   
-    
   object TomatoJuiceMain {
     case object StartUI
     
   }
     
-    
   class TomatoJuiceMainActor extends Actor with ActorLogging {
 
     import CoreMessages._
     import TomatoJuiceMain._
-    import PomodoroTracker._
-    
-    val uiMain = context.actorOf(Props(new TomatoJuiceUIMain(self)), "TomatoJuiceUI")
+        
     val pomodoroTracker = context.actorOf(Props(new PomodoroTrackerActor(self)), "PomodoroTracker")
     val db = createDBMainActor(context, "TomatoJuiceDB")
+    val uiMain = context.actorOf(Props(new TomatoJuiceUIMain(self)), "TomatoJuiceUI")
     
-    override def receive: Receive = LoggingReceive {
+    override def receive = beforeStart orElse pomodoroListener 
+    
+    def beforeStart: Receive = LoggingReceive {
       case StartUI =>
         uiMain ! StartUp
-        context.become(pomodoroInactive)
+        context.become(pomodoroInactive orElse pomodoroListener)
+    }
+    
+    def pomodoroListener: Receive = LoggingReceive {
       case RegisterPomodoroListener(listener) =>
         pomodoroTracker ! Listen(listener)
-      case x => log.info(" ???? main " + x)
     }
     
     def pomodoroInactive: Receive = LoggingReceive {
       case StartTimer =>        
-        pomodoroTracker ! TimerActivated        
+        pomodoroTracker ! PomodoroTracker.TimerActivated        
       case NewPomodoroStarted =>
         db ! RecordPomodoroStart
       case PomodoroPersist.PomodoroCreated(id) => 
-        context.become(pomodoroActive(id))
-      case RegisterPomodoroListener(listener) =>  // copied
-        pomodoroTracker ! Listen(listener)        // copied
-      case x => log.info(" !!!!! main " + x)
+        context.become(pomodoroActive(id) orElse pomodoroListener)
     }
     
     def pomodoroActive(id: POMODORO_ID): Receive = LoggingReceive{
       case ConfirmPomodoroCompleted =>
         db ! RecordPomodoroCompleted(id)
-        context.become(pomodoroInactive)
-      case x =>
-        log.info(" !`!`!`!`! main active " + x)
+        context.become(pomodoroInactive orElse pomodoroListener)
     }
   }
 

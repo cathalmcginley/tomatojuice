@@ -2,7 +2,6 @@ package org.gnostai.tomatojuice.db
 
 import java.sql.ResultSet
 
-
 trait QueryToStream {
 
   def makeStream[T](thunk: ResultSet => T)(rslt: ResultSet): Stream[T] = {

@@ -15,9 +15,12 @@ trait CoreMessagesModule {
     /** sent to main app by gui again; ask main to update db  */
     case object ConfirmPomodoroCompleted
     
-    //case object StartBreak
    
-    
+   
+    /**
+     * sent to main to link up parts of the UI actor system with
+     * the pomodoro tracker actor
+     */
     case class RegisterPomodoroListener(listener: ActorRef) // HACK
     
   }

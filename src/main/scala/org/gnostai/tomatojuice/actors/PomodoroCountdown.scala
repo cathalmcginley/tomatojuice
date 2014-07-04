@@ -23,6 +23,9 @@ trait PomodoroCountdownModule extends CoreConfigurationModule {
     val pomodoroTracker = context.parent
 
     private val OneMinute = {
+      /* 
+       * Obviously, this is not intended for public use, and should eventually be removed
+       */
       if (pomodoroConfig.getBoolean("dummyTestTimer")) {
         500 milliseconds
       } else {
@@ -34,19 +37,15 @@ trait PomodoroCountdownModule extends CoreConfigurationModule {
 
     def timerInactive: Receive = {
       case StartCountdown(remaining) =>
-        log.info("starting with timer at " + remaining)
         scheduleOneMinuteCallback(remaining)
-
-      case x => log.info("inactive got " + x)
+      case x => log.warning("Unexpected timer message while timerInactive: " + x)
     }
 
     def timerActive(timer: Cancellable): Receive = {
       case MinutesRemaining(remaining) =>
-        log.info(" ... remaining " + remaining)
         if (remaining > 0) {
           scheduleOneMinuteCallback(remaining)
         } else {
-          log.info("timer done!!")
           pomodoroTracker ! TimerCompleted
           context.become(timerInactive)
         }
@@ -58,15 +57,11 @@ trait PomodoroCountdownModule extends CoreConfigurationModule {
 
     private def scheduleOneMinuteCallback(currentMinutesRemaining: Int) {
       pomodoroTracker ! MinutesRemaining(currentMinutesRemaining)
-      implicit val executionContext = context.dispatcher
+      implicit val dispatcher = context.dispatcher
       val next = currentMinutesRemaining - 1
       val cancellable = context.system.scheduler.scheduleOnce(OneMinute, self, MinutesRemaining(next))
       context.become(timerActive(cancellable))
     }
 
   }
-
-  //  def createCountdownActor(implicit context: ActorContext) = {
-  //    context.actorOf(Props(new PomodoroCountdownActor))
-  //  }
 }

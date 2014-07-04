@@ -19,8 +19,7 @@ trait CoreConfigurationModule {
     lazy val classpathConfig = ConfigFactory.load()
 
     lazy val config = {
-      System.out.println("!!!\n!!!\nCALLING CoreConfig.config ONCE\n!!!\n!!!")
-      userConfig.withFallback(classpathConfig)
+      userConfig.withFallback(classpathConfig).resolve()
     }
 
   }
