@@ -21,13 +21,15 @@ with ProjectDatabaseActorModule {
     def pomodoroActor: ActorRef
     def projectActor: ActorRef
 
+    
+    // HACK duplication!!!
     override def receive: Receive = LoggingReceive {
       case RecordPomodoroStart =>
-        pomodoroActor ! CreateNewPomodoro(25, sender)
+        pomodoroActor ! PomodoroPersist.CreateNewPomodoro(25, sender)
       case RecordPomodoroCompleted(id) =>
-        pomodoroActor ! PomodoroCompleted(id)
+        pomodoroActor ! PomodoroPersist.PomodoroCompleted(id)
       case RecordNewProject(name, description, icon) =>
-        projectActor ! "..."
+        projectActor ! ProjectPersist.CreateNewProject(name, description, icon, sender)
     }
 
   }

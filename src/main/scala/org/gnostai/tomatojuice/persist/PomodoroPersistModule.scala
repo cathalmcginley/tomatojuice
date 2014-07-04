@@ -8,11 +8,14 @@ trait PomodoroPersistModule {
   
   type POMODORO_ID 
     
+  object PomodoroPersist {
+  
   case class CreateNewPomodoro(durationMinutes: Int, origSender: ActorRef)
   case class PomodoroCreated(pomodoroId: POMODORO_ID)
   case class PomodoroCompleted(pomodoroId: POMODORO_ID)
   case object Continue
   
+  }
   
   abstract class PomodoroPersistActor extends Actor with ActorLogging with UnboundedStash {
 
@@ -21,7 +24,7 @@ trait PomodoroPersistModule {
     def receive: Receive = free
 
     def busy: Receive = {
-      case Continue =>
+      case PomodoroPersist.Continue =>
         context.become(free)
         unstashAll()
       case x =>
@@ -29,16 +32,16 @@ trait PomodoroPersistModule {
     }
 
     def free: Receive = {
-      case CreateNewPomodoro(mins, origSender) =>
+      case PomodoroPersist.CreateNewPomodoro(mins, origSender) =>
         implicit val dispatcher = context.system.dispatcher
         val origSender = sender
         context.become(busy)
-        asyncRecordNewPomodoro(mins, origSender) map { _ => Continue } pipeTo self        
-      case PomodoroCompleted(id) =>
+        asyncRecordNewPomodoro(mins, origSender) map { _ => PomodoroPersist.Continue } pipeTo self        
+      case PomodoroPersist.PomodoroCompleted(id) =>
         implicit val dispatcher = context.system.dispatcher
         val origSender = sender
         context.become(busy)
-        asyncMarkPomodoroCompleted(id) map { _ => Continue } pipeTo self
+        asyncMarkPomodoroCompleted(id) map { _ => PomodoroPersist.Continue } pipeTo self
     
     }
 

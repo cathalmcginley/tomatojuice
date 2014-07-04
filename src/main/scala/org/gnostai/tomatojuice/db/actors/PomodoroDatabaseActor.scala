@@ -43,7 +43,7 @@ trait PomodoroDatabaseModule extends PomodoroPersistModule {
         
         val main = context.actorFor("akka://TomatoJuice/user/TomatoJuice")
         log.info("main " + main)
-        main ! PomodoroCreated(PomodoroDbId(newId))
+        main ! PomodoroPersist.PomodoroCreated(PomodoroDbId(newId))
       }
       PomodoroDbId(count)
     }

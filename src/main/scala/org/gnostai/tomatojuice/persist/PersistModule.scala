@@ -17,13 +17,17 @@ trait PersistModule  extends PomodoroPersistModule with ProjectPersistModule {
   abstract class PersistActor extends Actor with ActorLogging {
 
     def pomodoroActor: ActorRef
+    def projectActor: ActorRef
 
     override def receive: Receive = {
       case RecordPomodoroStart =>
-        pomodoroActor ! CreateNewPomodoro(25, sender)
+        pomodoroActor ! PomodoroPersist.CreateNewPomodoro(25, sender)
       case RecordPomodoroCompleted(id) =>
-        pomodoroActor ! CreateNewPomodoro(25, sender)
-      case PomodoroCreated =>
+        pomodoroActor ! PomodoroPersist.CreateNewPomodoro(25, sender)
+      case RecordNewProject(name, desc, icon) =>
+        log.info("record new project " + name)
+        projectActor ! ProjectPersist.CreateNewProject(name, desc, icon, sender)
+      case PomodoroPersist.PomodoroCreated =>
         log.info("created")
     }
 

@@ -4,14 +4,20 @@ import akka.actor._
 import org.gnostai.tomatojuice.ui.StatusIconModule
 import scala.concurrent.Future
 import org.gnostai.tomatojuice.ui.AudioNotificationModule
+import org.gnostai.tomatojuice.core.CoreMessagesModule
 
-trait StatusIconActorModule extends PomodoroCountdownActorModule with StatusIconModule with AudioNotificationModule {
+trait StatusIconActorModule extends PomodoroCountdownActorModule 
+with StatusIconModule 
+with AudioNotificationModule 
+with CoreMessagesModule {
   
   //case class DisplayMinutesRemaining(remaining: Int, timer: CountdownType) extends Message
   //case class CountdownFinished(timer: CountdownType) extends Message
   
   class StatusIconActor extends Actor with ActorLogging {
 
+    import CoreMessages._
+    
     val countdownActor = context.actorOf(Props(new PomodoroCountdownActor))
     
     
@@ -46,7 +52,7 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule with StatusIcon
         
         val mainApp = context.actorSelection("../..")
         log.info(" >>> " + mainApp)
-        mainApp ! "StartPomodoro"
+        mainApp ! StartNewPomodoro
         
         implicit val disp = context.system.dispatcher
         for (facade <- audio) { facade.playInitialPomodoroSound() }
@@ -62,7 +68,7 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule with StatusIcon
         
         val mainApp = context.actorSelection("../..")
         log.info(" >>> " + mainApp)
-        mainApp ! "CompletedPomodoro"
+        mainApp ! ConfirmPomodorCompleted
         context.become(timerInactive(iconFacade, nextCountdownFor(countdown)))
         implicit val disp = context.system.dispatcher
         for (facade <- audio) { facade.playPomodoroCompletedSound() }

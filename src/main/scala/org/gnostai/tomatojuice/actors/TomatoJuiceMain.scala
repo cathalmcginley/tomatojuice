@@ -4,8 +4,9 @@ import akka.actor._
 import akka.event.LoggingReceive
 import org.gnostai.tomatojuice.ui.actors.TomatoJuiceUIMainModule
 import org.gnostai.tomatojuice.persist.PersistModule
+import org.gnostai.tomatojuice.core.CoreMessagesModule
 
-trait TomatoJuiceMainModule {
+trait TomatoJuiceMainModule extends CoreMessagesModule {
 
   this: TomatoJuiceUIMainModule with PersistModule =>
   
@@ -20,6 +21,7 @@ trait TomatoJuiceMainModule {
     
   class TomatoJuiceMainActor extends Actor with ActorLogging {
 
+    import CoreMessages._
     import TomatoJuiceMain._
     
     val uiMain = context.actorOf(Props(new TomatoJuiceUIMain()), "TomatoJuiceUI")
@@ -34,17 +36,16 @@ trait TomatoJuiceMainModule {
     }
     
     def pomodoroInactive: Receive = LoggingReceive {
-      case "StartPomodoro" =>
-        println("     .................... start pomodoro")
-        db ! RecordPomodoroStart          
-      case PomodoroCreated(id) => 
-        println("     .................... pomodoro created")
+      case StartNewPomodoro =>
+        db ! RecordPomodoroStart        
+        //db ! RecordNewProject("name", "some description", None)
+      case PomodoroPersist.PomodoroCreated(id) => 
         context.become(pomodoroActive(id))
       case x => log.info(" !!!!! main " + x)
     }
     
     def pomodoroActive(id: POMODORO_ID): Receive = LoggingReceive{
-      case "CompletedPomodoro" =>
+      case ConfirmPomodorCompleted =>
         db ! RecordPomodoroCompleted(id)
         context.become(pomodoroInactive)
       case x =>

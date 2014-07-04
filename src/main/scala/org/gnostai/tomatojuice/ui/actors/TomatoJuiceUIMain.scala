@@ -20,9 +20,8 @@ trait TomatoJuiceUIMainModule extends StatusIconActorModule {
           initializeGui(context.system, self)
         } onSuccess {
           case handle =>
-            log.info("got handle" + handle)
+            log.info("got handle " + handle)
             context.become(activeGuiRunning(handle))
-            //statusIcon ! DisplayInitialStatusIcon(handle)
         } 
         
       case x => log.info("main: " + x)
