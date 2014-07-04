@@ -13,7 +13,7 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
 
     val ImageDir = "src/main/resources/icons"
 
-    val icons = new PomodoroIcons(ImageDir)
+    val icons = new GtkPomodoroIcons(ImageDir)
 
     val statusIcon: gtk.StatusIcon = buildStatusIcon
 
@@ -30,9 +30,15 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
     }
 
     def showMinutesRemaining(minutesRemaining: Int, countdown: CountdownTimer) {
-      println("showMinutesRemaining(): NO ACTION")
-      val icon = iconFor(minutesRemaining, countdown)
       safely {
+        val icon = iconFor(minutesRemaining, countdown)
+        statusIcon.setFromPixbuf(icon)
+      }
+    }
+    
+    def showStartIcon(countdown: CountdownTimer) {      
+      safely {
+        val icon = startIconForCountdown(countdown)
         statusIcon.setFromPixbuf(icon)
       }
     }
@@ -50,13 +56,28 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
       countdown match {
         case PomodoroCountdownTimer => icons.pomodoroIcons
         case ShortBreakCountdownTimer => icons.breakIcons
-        case LongBreakCountdownTimer => icons.pomodoroIcons // HACK
+        case LongBreakCountdownTimer => icons.longBreakIcons 
+      }
+    }
+    
+    private def startIconForCountdown(countdown: CountdownTimer): gdk.Pixbuf = {
+      countdown match {
+        case PomodoroCountdownTimer => icons.pomodoroStartIcon
+        case ShortBreakCountdownTimer => icons.breakStartIcon
+        case LongBreakCountdownTimer => icons.longBreakStartIcon 
       }
     }
 
     def hintTimeRemaining(minutes: Int, seconds: Int) {
       println("hintTimeRemaining(): NO ACTION")
     }
+    
+    def hintMessage(message: String) {
+      safely {
+        statusIcon.setTooltipText(message)
+      }
+    }
+    
 
     def timerCompleted() {
       println("timerCompleted(): NO ACTION")

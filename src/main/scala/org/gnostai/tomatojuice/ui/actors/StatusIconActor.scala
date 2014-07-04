@@ -42,6 +42,7 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule
           case iconFacade =>
             println("! got icon facade " + iconFacade)
             context.become(timerInactive(iconFacade, PomodoroCountdownTimer))
+            iconFacade.hintMessage("Ready to start " + PomodoroCountdownTimer)
         }
     }
 
@@ -53,6 +54,8 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule
       case StatusIconActivated =>
         log.info("activated - TODO start " + nextCountdown + " timer or whatever")
         context.become(timerInactive(iconFacade, nextCountdown))
+        iconFacade.showStartIcon(nextCountdown)
+        iconFacade.hintMessage("Ready to start " + nextCountdown)
         mainApp ! ConfirmPomodoroCompleted
 
     }
@@ -63,7 +66,7 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule
         log.info("activated - TODO start " + nextCountdown + " timer or whatever")
         context.become(countingDown(iconFacade, nextCountdown))
         mainApp ! StartTimer
-
+        iconFacade.hintMessage("Started timer for " + nextCountdown)
         if (uiConfig.getBoolean("soundEffects")) {
           implicit val disp = context.system.dispatcher
           for (facade <- audio) { facade.playInitialPomodoroSound() }
@@ -77,7 +80,7 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule
         iconFacade.timerCompleted()
 
         context.become(timerSuperInactive(iconFacade, nextTimer))
-        
+        iconFacade.hintMessage("Finished timer for " + countdown)
         if (uiConfig.getBoolean("soundEffects")) {
           implicit val disp = context.system.dispatcher
           for (facade <- audio) { facade.playPomodoroCompletedSound() }

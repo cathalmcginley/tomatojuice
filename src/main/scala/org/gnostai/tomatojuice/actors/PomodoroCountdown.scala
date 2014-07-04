@@ -26,7 +26,7 @@ trait PomodoroCountdownModule extends CoreConfigurationModule {
       if (pomodoroConfig.getBoolean("dummyTestTimer")) {
         500 milliseconds
       } else {
-        pomodoroConfig.getInt("secondsPerMinute") seconds
+        60 seconds
       }
     }
 

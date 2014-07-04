@@ -21,9 +21,13 @@ trait StatusIconModule extends UIFacadeModule with CoreDomainModule {
     def longBreakBegins(): Unit
     
     
+    def showStartIcon(countdown: CountdownTimer)
+    
     def showMinutesRemaining(minutesRemaining: Int, countdown: CountdownTimer)
     
     def hintTimeRemaining(minutes: Int, seconds: Int)
+    
+    def hintMessage(message: String)
     
     
     def timerCompleted(): Unit

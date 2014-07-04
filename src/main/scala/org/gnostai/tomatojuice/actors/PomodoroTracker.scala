@@ -57,11 +57,19 @@ trait PomodoroTrackerModule extends PomodoroCountdownModule
         //        iconFacade.showMinutesRemaining(0, countdown)
         //        iconFacade.timerCompleted()
 
-        val remainingAfterCompletion = pomodorosRemaining - 1
-        val nextTimer = nextTimerFor(timer, remainingAfterCompletion)
+      val remaining = timer match {
+          case PomodoroCountdownTimer => pomodorosRemaining
+          case ShortBreakCountdownTimer => pomodorosRemaining - 1
+          case LongBreakCountdownTimer => pomodorosBeforeLongBreak
+        }
+        
+        //val remainingAfterCompletion = pomodorosRemaining - 1
+        val nextTimer = nextTimerFor(timer, remaining)
         
         gossip(CountdownTimerCompleted(nextTimer))
-        context.become(timerInactive(nextTimer, remainingAfterCompletion))
+        
+         
+        context.become(timerInactive(nextTimer, remaining))
       //        implicit val disp = context.system.dispatcher
       //        for (facade <- audio) { facade.playPomodoroCompletedSound() }
     }
@@ -70,12 +78,12 @@ trait PomodoroTrackerModule extends PomodoroCountdownModule
 
     private def nextTimerFor(countdown: CountdownTimer, pomodorosRemaining: Int): CountdownTimer = {
       countdown match {
-        case PomodoroCountdownTimer => ShortBreakCountdownTimer
-        case ShortBreakCountdownTimer =>
+        case PomodoroCountdownTimer => 
           if (pomodorosRemaining > 1)
-            PomodoroCountdownTimer
+            ShortBreakCountdownTimer
           else
             LongBreakCountdownTimer
+        case ShortBreakCountdownTimer => PomodoroCountdownTimer          
         case LongBreakCountdownTimer => PomodoroCountdownTimer
       }
     }
