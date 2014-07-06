@@ -8,13 +8,15 @@ import org.gnostai.tomatojuice.core.CoreMessagesModule
 import org.gnostai.tomatojuice.core.CoreConfigurationModule
 import org.gnostai.tomatojuice.actors.PomodoroTrackerModule
 import akka.event.LoggingReceive
+import org.gnostai.tomatojuice.ui.NoteDialogModule
 
 trait StatusIconActorModule extends PomodoroCountdownActorModule
-  with StatusIconModule
-  with AudioNotificationModule
+  with AudioNotificationModule 
   with CoreMessagesModule
-  with PomodoroTrackerModule
-  with CoreConfigurationModule {
+  with PomodoroTrackerModule 
+  with CoreConfigurationModule {   
+    
+  this: StatusIconModule =>
 
   class StatusIconActor(mainApp: ActorRef) extends Actor with ActorLogging {
 
@@ -22,13 +24,13 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule
     val uiConfig = config.getConfig("tomatojuice.ui")
 
     import CoreMessages._
-    
+
     import PomodoroTracker._
 
     val countdownActor = context.actorOf(Props(new PomodoroCountdownActor))
 
     mainApp ! RegisterPomodoroListener(self)
-    
+
     lazy val audio = createAudioNotification()
 
     def receive = notInitialized
@@ -60,7 +62,6 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule
 
     }
 
-    
     def timerInactive(iconFacade: STATUS_ICON, nextCountdown: CountdownTimer): Receive = {
       case StatusIconActivated =>
         log.info("activated - TODO start " + nextCountdown + " timer or whatever")
@@ -76,11 +77,13 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule
     def countingDown(iconFacade: STATUS_ICON, countdown: CountdownTimer): Receive = {
       case CountdownMinutesRemaining(timer, mins) =>
         iconFacade.showMinutesRemaining(mins, timer)
-      case CountdownTimerCompleted(nextTimer) =>        
+      case CountdownTimerCompleted(nextTimer) =>
         iconFacade.timerCompleted()
+        context.parent ! "PopUpNoteDialog"
 
         context.become(timerSuperInactive(iconFacade, nextTimer))
         iconFacade.hintMessage("Finished timer for " + countdown)
+
         if (uiConfig.getBoolean("soundEffects")) {
           implicit val disp = context.system.dispatcher
           for (facade <- audio) { facade.playPomodoroCompletedSound() }

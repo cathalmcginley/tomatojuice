@@ -5,12 +5,18 @@ import akka.actor._
 import org.gnostai.tomatojuice.jorbisui.JOrbisAudioNotificationModule
 import org.gnostai.tomatojuice.mysqldb.MySQLDatabaseModule
 import org.gnostai.tomatojuice.ui.actors.TomatoJuiceUIMainModule
+import org.gnostai.tomatojuice.ui.actors.StatusIconActorModule
+import org.gnostai.tomatojuice.ui.actors.StatusIconActorModule
+import org.gnostai.tomatojuice.ui.StatusIconModule
 
 object GtkUIMain extends TomatoJuiceMainModule
-  with TomatoJuiceUIMainModule
+  with StatusIconActorModule
+  with StatusIconModule
   with GtkUIFacadeModule
-  with GtkStatusIconModule 
-  with JOrbisAudioNotificationModule 
+  with GtkStatusIconModule
+  with GtkPomodoroNoteDialogModule
+  with TomatoJuiceUIMainModule
+  with JOrbisAudioNotificationModule
   with MySQLDatabaseModule {
 
   def main(args: Array[String]): Unit = {

@@ -6,6 +6,8 @@ import org.gnostai.tomatojuice.core.CoreDomainModule
 
 trait StatusIconModule extends UIFacadeModule with CoreDomainModule {
   
+  this: NoteDialogModule =>
+  
   case class DisplayInitialStatusIcon(handle: GUI_HANDLE) extends Message
   case object StatusIconActivated extends Message
   case object HideStatusIcon extends Message

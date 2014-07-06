@@ -1,6 +1,7 @@
 package org.gnostai.tomatojuice.ui
 
 import scala.concurrent.Future
+import akka.actor.ActorRef
 
 trait NoteDialogModule extends UIFacadeModule {
 
@@ -12,6 +13,6 @@ trait NoteDialogModule extends UIFacadeModule {
   
   type POMODORO_NOTE_DIALOG <: PomodoroNodeDialogFacade
   
-  def createNoteDialog(handle: ApplicationHandle): Future[POMODORO_NOTE_DIALOG]
+  def createNoteDialog(mainUi: ActorRef, handle: ApplicationHandle): Future[POMODORO_NOTE_DIALOG]
   
 }
