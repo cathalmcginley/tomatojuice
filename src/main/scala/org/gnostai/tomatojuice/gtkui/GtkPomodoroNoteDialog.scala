@@ -10,6 +10,9 @@ import tomatojuice.JavaSounds
 import org.gnostai.tomatojuice.ui.NoteDialogModule
 import scala.concurrent.Future
 import scala.concurrent.Promise
+import org.gnostai.tomatojuice.core.CoreDomainModule
+import org.gnostai.tomatojuice.core.CoreDomainModule
+import org.gnostai.tomatojuice.core.CoreDomainModule
 
 /*
  * 
@@ -28,7 +31,9 @@ import scala.concurrent.Promise
 }
  */
 
-trait GtkPomodoroNoteDialogModule extends NoteDialogModule with GtkUIFacadeModule {
+trait GtkPomodoroNoteDialogModule extends CoreDomainModule
+  with GtkProjectListModule
+  with NoteDialogModule with GtkUIFacadeModule {
 
   type POMODORO_NOTE_DIALOG = GtkPomodoroNoteDialog
   
@@ -45,6 +50,8 @@ trait GtkPomodoroNoteDialogModule extends NoteDialogModule with GtkUIFacadeModul
   
   class GtkPomodoroNoteDialog(mainWindowActor: ActorRef, guiHandle: GUI_HANDLE) extends PomodoroNoteDialogFacade {
 
+    val projectList = new GtkProjectList
+    
     val dialog = buildDialog
 
 //    def activateGui() {
@@ -53,6 +60,10 @@ trait GtkPomodoroNoteDialogModule extends NoteDialogModule with GtkUIFacadeModul
 //
 //    }
 
+    def displayProjects(projects: Iterable[Project]) {
+      projectList.displayProjects(projects)
+    }
+    
     def popUp() {
       println("showing dialog")
       safely {
@@ -79,10 +90,10 @@ trait GtkPomodoroNoteDialogModule extends NoteDialogModule with GtkUIFacadeModul
       //mainVBox.packStart(menu.widget, false, false, 3)
 
       val mainHBox = new HBox(false, 0)
-      val nav = new GtkProjectList
+      
       val testLabel = new Label("test 2") /* HACK */
 
-      val mainHPane = new HPaned(nav.widget, testLabel)
+      val mainHPane = new HPaned(projectList.widget, testLabel)
       mainHPane.setPosition(150)
       mainVBox.add(mainHPane)
 
@@ -118,8 +129,8 @@ trait GtkPomodoroNoteDialogModule extends NoteDialogModule with GtkUIFacadeModul
 
       w.connect(new Window.DeleteEvent() {
         def onDeleteEvent(source: Widget, event: Event): Boolean = {
-          println("got Window.DeleteEvent")
-          mainWindowActor ! "HACK MainWindowActor.CloseUI"
+          println("got Window.DeleteEvent")          
+          mainWindowActor ! PomodoroNoteDialog.DialogClosing          
           false
         }
       })

@@ -6,7 +6,6 @@ import akka.event.LoggingReceive
 import org.gnostai.tomatojuice.ui.NoteDialogModule
 import org.gnostai.tomatojuice.ui.StatusIconModule
 
-
 trait TomatoJuiceUIMainModule { 
   this: StatusIconActorModule with StatusIconModule
   with PomodoroNoteDialogActorModule with NoteDialogModule =>
@@ -35,10 +34,11 @@ trait TomatoJuiceUIMainModule {
     def activeGuiRunning(guiHandle: GUI_HANDLE): Receive = LoggingReceive {
       case GuiActivated(handle) =>
         statusIcon ! DisplayInitialStatusIcon(handle)
-      case "PopUpNoteDialog" =>
+      case PomodoroNoteDialog.PopUpNoteDialog =>
         val appHandle = ApplicationHandle(context.system, self, guiHandle)
         noteDialog ! PomodoroNoteDialog.PopUpDialog(appHandle)
-        
+      case x @ PomodoroNoteDialog.DialogClosing =>
+        noteDialog ! PomodoroNoteDialog.DialogClosing
       case x => 
         log.warning("got unexpected message " + x + "; sending to mainApp")
         mainApp ! x

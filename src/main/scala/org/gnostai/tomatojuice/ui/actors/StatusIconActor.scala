@@ -9,6 +9,7 @@ import org.gnostai.tomatojuice.core.CoreConfigurationModule
 import org.gnostai.tomatojuice.actors.PomodoroTrackerModule
 import akka.event.LoggingReceive
 import org.gnostai.tomatojuice.ui.NoteDialogModule
+import org.gnostai.tomatojuice.ui.NoteDialogModule
 
 trait StatusIconActorModule extends PomodoroCountdownActorModule
   with AudioNotificationModule 
@@ -16,7 +17,7 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule
   with PomodoroTrackerModule 
   with CoreConfigurationModule {   
     
-  this: StatusIconModule =>
+  this: StatusIconModule with PomodoroNoteDialogActorModule =>
 
   class StatusIconActor(mainApp: ActorRef) extends Actor with ActorLogging {
 
@@ -79,7 +80,7 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule
         iconFacade.showMinutesRemaining(mins, timer)
       case CountdownTimerCompleted(nextTimer) =>
         iconFacade.timerCompleted()
-        context.parent ! "PopUpNoteDialog"
+        context.parent ! PomodoroNoteDialog.PopUpNoteDialog
 
         context.become(timerSuperInactive(iconFacade, nextTimer))
         iconFacade.hintMessage("Finished timer for " + countdown)

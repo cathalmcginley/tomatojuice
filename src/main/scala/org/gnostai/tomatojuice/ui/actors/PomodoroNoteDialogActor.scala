@@ -19,12 +19,15 @@ trait PomodoroNoteDialogActorModule extends NoteDialogModule {
         context.become(dialogVisible(handle))
         noteFacadeFuture onSuccess {
           case facade => 
+            facade.displayProjects(Seq(Project(Some(1), "No Project", "", None)))
             facade.popUp()
             
         }
     }
     
     def dialogVisible(handle: ApplicationHandle): Receive = LoggingReceive {
+      case DialogClosing =>
+        context.become(dialogNotVisible)
       case x => 
         log.info("dialog visible: " + x)
     }
