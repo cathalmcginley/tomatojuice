@@ -36,34 +36,29 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
   with NoteDialogModule with GtkUIFacadeModule {
 
   type POMODORO_NOTE_DIALOG = GtkPomodoroNoteDialog
-  
-  override def createNoteDialog(mainUi: ActorRef, handle: ApplicationHandle) : Future[POMODORO_NOTE_DIALOG] = {
+
+  override def createNoteDialog(mainUi: ActorRef, handle: ApplicationHandle): Future[POMODORO_NOTE_DIALOG] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     val facadePromise = Promise[POMODORO_NOTE_DIALOG]
     safely {
       //val iconFacade = new GtkStatusIconFacade(iconActor, handle)
-      val dialogFacade = new GtkPomodoroNoteDialog(handle.mainApp, handle.guiHandle)
+      val dialogFacade = new GtkPomodoroNoteDialog(mainUi, handle.guiHandle)
       facadePromise success (dialogFacade)
     }
     facadePromise.future
   }
-  
-  class GtkPomodoroNoteDialog(mainWindowActor: ActorRef, guiHandle: GUI_HANDLE) extends PomodoroNoteDialogFacade {
+
+  class GtkPomodoroNoteDialog(mainUi: ActorRef, guiHandle: GUI_HANDLE) extends PomodoroNoteDialogFacade {
 
     val projectList = new GtkProjectList
-    
-    val dialog = buildDialog
 
-//    def activateGui() {
-//
-//      dialog.present()
-//
-//    }
+    val (noteText, noteTextScroll) = buildNoteText
+    val dialog = buildDialog
 
     def displayProjects(projects: Iterable[Project]) {
       projectList.displayProjects(projects)
     }
-    
+
     def popUp() {
       println("showing dialog")
       safely {
@@ -72,7 +67,6 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
         dialog.present()
       }
     }
-      
 
     def hideAndRemoveWindow(uniq: Application) {
       dialog.hide()
@@ -80,6 +74,19 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
     }
 
     // ------------- [ private methods ] -------------------
+
+    private def buildNoteText = {
+
+      val buffer = new TextBuffer()
+      val view = new TextView(buffer)
+      view.setWrapMode(WrapMode.WORD)
+      val scroll = new ScrolledWindow()
+      scroll.setPolicy(PolicyType.NEVER, PolicyType.ALWAYS)
+      scroll.add(view)
+      scroll.setSizeRequest(350, 300) // TODO get this from config
+
+      (view, scroll)
+    }
 
     private def buildDialog: Dialog = {
 
@@ -90,12 +97,30 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
       //mainVBox.packStart(menu.widget, false, false, 3)
 
       val mainHBox = new HBox(false, 0)
-      
-      val testLabel = new Label("test 2") /* HACK */
 
-      val mainHPane = new HPaned(projectList.widget, testLabel)
+      val vbox = new VBox(false, 0)
+      vbox.packStart(noteTextScroll, true, true, 10)
+
+      val buttonPane = new HButtonBox()
+      buttonPane.setLayout(ButtonBoxStyle.END)
+      val scriptButton = new Button("Save")
+      
+      scriptButton.connect(new Button.Clicked() {
+        def onClicked(source: Button) {
+          mainUi ! "Foo"
+
+        }
+      })
+
+      buttonPane.add(scriptButton)
+
+      vbox.packEnd(buttonPane, false, false, 5)
+
+      val mainHPane = new HPaned(projectList.widget, vbox)
       mainHPane.setPosition(150)
       mainVBox.add(mainHPane)
+
+      
 
       // mainVbox add menubar
 
@@ -117,7 +142,9 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
 
       mainWin.add(mainVBox)
       //mainWin.setDefaultSize(1200, 800)
-      mainWin.setDefaultSize(800, 600)
+      mainWin.setDefaultSize(550, 400)
+      mainWin.setPosition(WindowPosition.MOUSE)
+
       connectWindowDeleteEvent(mainWin)
       //mainWin.showAll
       //// mainWin.setMaximize(true) // just experimenting
@@ -125,12 +152,12 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
     }
 
     private def connectWindowDeleteEvent(w: Window) {
-      implicit val implicitSender = mainWindowActor
+      implicit val implicitSender = mainUi
 
       w.connect(new Window.DeleteEvent() {
         def onDeleteEvent(source: Widget, event: Event): Boolean = {
-          println("got Window.DeleteEvent")          
-          mainWindowActor ! PomodoroNoteDialog.DialogClosing          
+          println("got Window.DeleteEvent")
+          mainUi ! PomodoroNoteDialog.DialogClosing
           false
         }
       })

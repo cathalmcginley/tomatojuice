@@ -17,3 +17,7 @@ trait CoreDomainModule {
   }
 
 }
+
+object CoreDomainModule extends CoreDomainModule {
+  
+}

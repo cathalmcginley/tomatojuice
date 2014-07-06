@@ -5,8 +5,9 @@ import akka.pattern.pipe
 import scala.concurrent.Future
 import org.gnostai.tomatojuice.core.CoreDomainModule
 import akka.event.LoggingReceive
+import org.gnostai.tomatojuice.core.CoreMessagesModule
 
-trait ProjectPersistModule extends CoreDomainModule {
+trait ProjectPersistModule extends CoreDomainModule with CoreMessagesModule {
 
   type PROJECT_ID
 
@@ -41,10 +42,19 @@ trait ProjectPersistModule extends CoreDomainModule {
         context.become(busy)
         log.info("asyncRecordNewProject")
         asyncRecordNewProject(name, description, icon, origSender) map { _ => Continue } pipeTo self
-
-    }
+      case x @ CoreMessages.SendProjectList(origSender) =>
+        log.info("sending project list to " + origSender.path)
+        val fut = asyncGetAllProjects(origSender)
+        fut onSuccess {
+          case projects => origSender ! CoreMessages.ProjectList(projects)
+        }
+    }        
+            
 
     def asyncRecordNewProject(name: String, description: String, icon: Option[ImageData], origSender: ActorRef): Future[PROJECT_ID]
 
+    def asyncGetAllProjects(origSender: ActorRef): Future[Iterable[Project]]
+
+    
   }
 }

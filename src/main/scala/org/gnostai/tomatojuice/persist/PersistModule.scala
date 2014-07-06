@@ -1,8 +1,10 @@
 package org.gnostai.tomatojuice.persist
 
 import akka.actor._
+import org.gnostai.tomatojuice.core.CoreMessagesModule
 
-trait PersistModule  extends PomodoroPersistModule with ProjectPersistModule {
+
+trait PersistModule  extends PomodoroPersistModule with ProjectPersistModule with CoreMessagesModule {
 
   case object RecordPomodoroStart
   case class RecordPomodoroCompleted(pomodoroId: POMODORO_ID)
@@ -29,6 +31,8 @@ trait PersistModule  extends PomodoroPersistModule with ProjectPersistModule {
         projectActor ! ProjectPersist.CreateNewProject(name, desc, icon, sender)
       case PomodoroPersist.PomodoroCreated =>
         log.info("created")
+      case x @ CoreMessages.SendProjectList(origSender) =>
+        projectActor ! x 
     }
 
   }

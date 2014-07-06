@@ -26,6 +26,15 @@ trait ProjectDatabaseActorModule extends ProjectPersistModule with CoreDomainMod
       " VALUES (?, ?, ?)"
     lazy val insertStmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)
 
+    def asyncGetAllProjects(origSender: ActorRef): Future[Iterable[Project]] = Future {      
+      val x = new ProjectDBUtil().loadAll(conn)
+      
+      println(x)
+      
+      x
+      
+    }
+    
 
     def asyncRecordNewProject(name: String, description: String,
       icon: Option[ImageData], origSender: ActorRef): Future[PROJECT_ID] = Future {
@@ -77,7 +86,7 @@ trait ProjectDatabaseActorModule extends ProjectPersistModule with CoreDomainMod
 
       val valueStream = makeProjectStream(rslt)
 
-      valueStream
+      valueStream.toArray.toSeq
 
     }
 

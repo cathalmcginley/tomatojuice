@@ -7,6 +7,7 @@ import org.gnostai.tomatojuice.persist.PersistModule
 import org.gnostai.tomatojuice.core.CoreMessagesModule
 import akka.routing.Listen
 
+
 trait TomatoJuiceMainModule extends CoreMessagesModule with PomodoroTrackerModule {
 
   this: TomatoJuiceUIMainModule with PersistModule =>
@@ -36,6 +37,11 @@ trait TomatoJuiceMainModule extends CoreMessagesModule with PomodoroTrackerModul
     def pomodoroListener: Receive = LoggingReceive {
       case RegisterPomodoroListener(listener) =>
         pomodoroTracker ! Listen(listener)
+      case GetProjectList =>
+        val origSender = sender
+        db ! SendProjectList(origSender)
+      case x @ SendProjectList(origSender) =>
+        db ! x
     }
     
     def pomodoroInactive: Receive = LoggingReceive {

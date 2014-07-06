@@ -39,6 +39,9 @@ trait TomatoJuiceUIMainModule {
         noteDialog ! PomodoroNoteDialog.PopUpDialog(appHandle)
       case x @ PomodoroNoteDialog.DialogClosing =>
         noteDialog ! PomodoroNoteDialog.DialogClosing
+      case CoreMessages.GetProjectList =>
+        println("get project list request from " + sender.path)
+        mainApp ! CoreMessages.SendProjectList(sender)
       case x => 
         log.warning("got unexpected message " + x + "; sending to mainApp")
         mainApp ! x

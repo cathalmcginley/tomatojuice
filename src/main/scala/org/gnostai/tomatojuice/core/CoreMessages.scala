@@ -2,7 +2,7 @@ package org.gnostai.tomatojuice.core
 
 import akka.actor.ActorRef
 
-trait CoreMessagesModule {
+trait CoreMessagesModule extends CoreDomainModule {
   
   object CoreMessages {
     
@@ -23,6 +23,10 @@ trait CoreMessagesModule {
      */
     case class RegisterPomodoroListener(listener: ActorRef) // HACK
     
+    
+    case object GetProjectList
+    case class SendProjectList(orig: ActorRef)
+    case class ProjectList(projects: Iterable[Project])
     
     case object Quit
   }
