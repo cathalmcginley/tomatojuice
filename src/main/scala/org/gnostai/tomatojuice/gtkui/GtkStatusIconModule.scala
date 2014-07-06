@@ -6,27 +6,31 @@ import org.gnome.gtk
 import akka.actor.ActorRef
 import scala.concurrent.Future
 import scala.concurrent.Promise
+import org.gnostai.tomatojuice.core.CoreConfigurationModule
+import java.io.File
 
 trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
 
   class GtkStatusIconFacade(iconActor: ActorRef, handle: GUI_HANDLE) extends StatusIconFacade {
 
-    val ImageDir = "src/main/resources/icons"
-
-    val icons = new GtkPomodoroIcons(ImageDir)
+    
+    val ShareDir = new File(gtkuiConfig.getString("shareDir"))
+    val IconsDir = new File(ShareDir, "icons")
+    
+    val icons = new GtkPomodoroIcons(IconsDir)
 
     val statusIcon: gtk.StatusIcon = buildStatusIcon
 
     def sessionBegins() {
-      println("(): NO ACTION")
+      println("(): NO ACTION") // TODO some action here
     }
 
     def breakBegins() {
-      println("breakBegins(): NO ACTION")
+      println("breakBegins(): NO ACTION") // TODO some action here
     }
 
     def longBreakBegins() {
-      println("longBreakBegins(): NO ACTION")
+      println("longBreakBegins(): NO ACTION") // TODO some action here
     }
 
     def showMinutesRemaining(minutesRemaining: Int, countdown: CountdownTimer) {
@@ -69,7 +73,8 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
     }
 
     def hintTimeRemaining(minutes: Int, seconds: Int) {
-      println("hintTimeRemaining(): NO ACTION")
+      val message = f"$minutes%02d:$seconds%02d remaining"
+      hintMessage(message)
     }
     
     def hintMessage(message: String) {
@@ -80,43 +85,18 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
     
 
     def timerCompleted() {
-      println("timerCompleted(): NO ACTION")
+      println("timerCompleted(): NO ACTION") // TODO some action here
     }
 
     private def buildStatusIcon = {
-
-      println("buildStatusIcon")
-
-      //      val mainWin = new gtk.Window
-      //        mainWin.add(new gtk.Label("test"))
-      //        mainWin.showAll()
-      //
-      //        handle.addWindow(mainWin)
-      //        mainWin.present()
-
-      var status2: gtk.StatusIcon = null
-      println("ready for safety")
-      //safely {
-      println("saef??")
-      val status = new gtk.StatusIcon(icons.initial) //icons.initial)
+      val status = new gtk.StatusIcon(icons.initial)
       status.setVisible(true)
-      println(status.isEmbedded())
-
-      status.setVisible(true)
-      println(status.isEmbedded())
-
       status.connect(new gtk.StatusIcon.Activate() {
         def onActivate(icon: gtk.StatusIcon) {
-          println("activate")
           iconActor ! StatusIconActivated
         }
       })
-
-      println("foo")
-
-      status2 = status
-      //}
-      status2
+      status
     }
 
   }
@@ -124,28 +104,13 @@ trait GtkStatusIconModule extends GtkUIFacadeModule with StatusIconModule {
   type STATUS_ICON = GtkStatusIconFacade
 
   override def constructStatusIcon(iconActor: ActorRef, handle: GUI_HANDLE): Future[STATUS_ICON] = {
-    println("constructStatusIcon")
-    //    safely {
-    //        // vv TEMP REMOVE vv
-    //             val pixbuf = new gdk.Pixbuf("src/main/resources/icons/green-led-on.png")
-    //        val status = new gtk.StatusIcon(pixbuf)
-    //        status.setVisible(true)
-    //        println(">> embedded?    " + status.isEmbedded())
-    //        // ^^ TEMP REMOVE ^^
-    //    }
-
     import scala.concurrent.ExecutionContext.Implicits.global
     val facadePromise = Promise[STATUS_ICON]
-
     safely {
-      println("foo....")
       val iconFacade = new GtkStatusIconFacade(iconActor, handle)
-      println("icon facade " + iconFacade)
       facadePromise success (iconFacade)
     }
-
     facadePromise.future
-
   }
 
   class GtkStatusIconMenuFacade extends StatusIconMenuFacade {

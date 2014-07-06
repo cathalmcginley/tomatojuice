@@ -16,8 +16,8 @@ trait BoneConnectionPool extends CoreConfigurationModule {
     ds.setUsername(dbConfig.getString("username"))
     ds.setPassword(dbConfig.getString("password"))
     
-    // FIX this breaks with ClassNotFoundException
-    //     but works perfectly without it
+    // TODO [FIX] this breaks with a ClassNotFoundException
+    //     but the connection pool works perfectly without it
     // ds.setDriverClass(dbConfig.getString("driverClass"))  
     
     // TODO take these from the config file too...

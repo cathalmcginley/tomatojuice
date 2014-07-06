@@ -15,13 +15,11 @@ trait TomatoJuiceUIMainModule extends StatusIconActorModule {
     
     def receive: Receive = {
       case StartUp =>
-        log.info("StartUp:: aaa")
         import context.dispatcher
         Future {
           initializeGui(context.system, self)
         } onSuccess {
           case handle =>
-            log.info("got handle " + handle)
             context.become(activeGuiRunning(handle))
         } 
         
@@ -30,9 +28,10 @@ trait TomatoJuiceUIMainModule extends StatusIconActorModule {
 
     def activeGuiRunning(guiHandle: GUI_HANDLE): Receive = {
       case GuiActivated(handle) =>
-        log.info("activeGuiRunning got GuiActivated " + handle)
         statusIcon ! DisplayInitialStatusIcon(handle)
-      case x => log.info("?active " + x)
+      case x => 
+        log.warning("got unexpected message " + x + "; sending to mainApp")
+        mainApp ! x
     }
     
   }

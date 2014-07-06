@@ -38,23 +38,18 @@ trait PomodoroDatabaseModule extends PomodoroPersistModule {
       if (count == 1) {
         rslt.next()      
         val newId = rslt.getInt(1)
-        log.info("orig sender " + origSender)
         val grandparent = context.actorSelection("../../")
         
         val main = context.actorFor("akka://TomatoJuice/user/TomatoJuice")
-        log.info("main " + main)
         main ! PomodoroPersist.PomodoroCreated(PomodoroDbId(newId))
       }
       PomodoroDbId(count)
     }
 
     override def asyncMarkPomodoroCompleted(id: POMODORO_ID) = Future {
-      println("updating id " + id.dbId)
       updateStmt.setBoolean(1, true)
       updateStmt.setInt(2, id.dbId)
       val count = updateStmt.executeUpdate()
-      println("count " + count)
-      println(updateStmt)
       (count == 1)
     }
     

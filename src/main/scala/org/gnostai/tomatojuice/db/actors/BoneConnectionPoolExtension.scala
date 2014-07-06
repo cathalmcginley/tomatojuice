@@ -23,7 +23,7 @@ object BoneConnectionPoolExtension
   extends ExtensionId[BoneConnectionPoolExtensionImpl]
   with ExtensionIdProvider {
   
-  //The lookup method is required by ExtensionIdProvider,
+  // The lookup method is required by ExtensionIdProvider,
   // so we return ourselves here, this allows us
   // to configure our extension to be loaded when
   // the ActorSystem starts up
@@ -31,7 +31,7 @@ object BoneConnectionPoolExtension
   
   
  
-  //This method will be called by Akka
+  // This method will be called by Akka
   // to instantiate our Extension
   override def createExtension(system: ExtendedActorSystem) = new BoneConnectionPoolExtensionImpl(system)
 }

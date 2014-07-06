@@ -23,6 +23,8 @@ trait CoreMessagesModule {
      */
     case class RegisterPomodoroListener(listener: ActorRef) // HACK
     
+    
+    case object Quit
   }
 
 }

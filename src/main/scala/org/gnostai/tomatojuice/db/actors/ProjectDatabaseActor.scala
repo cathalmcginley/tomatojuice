@@ -26,10 +26,6 @@ trait ProjectDatabaseActorModule extends ProjectPersistModule with CoreDomainMod
       " VALUES (?, ?, ?)"
     lazy val insertStmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)
 
-//    override def free: Receive = {
-//      case ProjectPersist.CreateNewProject(name, description, icon, origSender) =>
-//        asyncRecordNewProject(name, description, icon, origSender) map { _ => ProjectPersist.Continue } pipeTo self   
-//    }
 
     def asyncRecordNewProject(name: String, description: String,
       icon: Option[ImageData], origSender: ActorRef): Future[PROJECT_ID] = Future {
