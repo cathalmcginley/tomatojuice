@@ -43,7 +43,7 @@ trait GtkPomodoroNoteDialogModule extends NoteDialogModule with GtkUIFacadeModul
     facadePromise.future
   }
   
-  class GtkPomodoroNoteDialog(mainWindowActor: ActorRef, guiHandle: GUI_HANDLE) extends PomodoroNodeDialogFacade {
+  class GtkPomodoroNoteDialog(mainWindowActor: ActorRef, guiHandle: GUI_HANDLE) extends PomodoroNoteDialogFacade {
 
     val dialog = buildDialog
 

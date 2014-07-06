@@ -5,13 +5,17 @@ import akka.actor.ActorRef
 
 trait NoteDialogModule extends UIFacadeModule {
 
-  abstract class PomodoroNodeDialogFacade extends UIFacade {
+  object PomodoroNoteDialog {
+    case class PopUpDialog(handle: ApplicationHandle)
+  }
+  
+  abstract class PomodoroNoteDialogFacade extends UIFacade {
     
     def popUp()
     
   }
   
-  type POMODORO_NOTE_DIALOG <: PomodoroNodeDialogFacade
+  type POMODORO_NOTE_DIALOG <: PomodoroNoteDialogFacade
   
   def createNoteDialog(mainUi: ActorRef, handle: ApplicationHandle): Future[POMODORO_NOTE_DIALOG]
   

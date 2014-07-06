@@ -8,6 +8,8 @@ import org.gnostai.tomatojuice.ui.actors.TomatoJuiceUIMainModule
 import org.gnostai.tomatojuice.ui.actors.StatusIconActorModule
 import org.gnostai.tomatojuice.ui.actors.StatusIconActorModule
 import org.gnostai.tomatojuice.ui.StatusIconModule
+import org.gnostai.tomatojuice.ui.NoteDialogModule
+import org.gnostai.tomatojuice.ui.actors.PomodoroNoteDialogActorModule
 
 object GtkUIMain extends TomatoJuiceMainModule
   with StatusIconActorModule
@@ -15,6 +17,8 @@ object GtkUIMain extends TomatoJuiceMainModule
   with GtkUIFacadeModule
   with GtkStatusIconModule
   with GtkPomodoroNoteDialogModule
+  with NoteDialogModule
+  with PomodoroNoteDialogActorModule
   with TomatoJuiceUIMainModule
   with JOrbisAudioNotificationModule
   with MySQLDatabaseModule {

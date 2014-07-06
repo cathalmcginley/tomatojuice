@@ -8,7 +8,8 @@ import org.gnostai.tomatojuice.ui.StatusIconModule
 
 
 trait TomatoJuiceUIMainModule { 
-  this: StatusIconActorModule with StatusIconModule with NoteDialogModule =>
+  this: StatusIconActorModule with StatusIconModule
+  with PomodoroNoteDialogActorModule with NoteDialogModule =>
 
   case object StartUp
   
@@ -16,6 +17,7 @@ trait TomatoJuiceUIMainModule {
   class TomatoJuiceUIMain(mainApp: ActorRef) extends Actor with ActorLogging {
 
     val statusIcon = context.actorOf(Props(new StatusIconActor(mainApp)), "PomodoroCountdownIcon")
+    val noteDialog = context.actorOf(Props(new PomodoroNoteDialogActor()), "PomodoroNoteDialog")
     
     def receive: Receive = {
       case StartUp =>
@@ -33,13 +35,10 @@ trait TomatoJuiceUIMainModule {
     def activeGuiRunning(guiHandle: GUI_HANDLE): Receive = LoggingReceive {
       case GuiActivated(handle) =>
         statusIcon ! DisplayInitialStatusIcon(handle)
-      case "PopUpNoteDialog" => 
+      case "PopUpNoteDialog" =>
         val appHandle = ApplicationHandle(context.system, self, guiHandle)
-        implicit val dispatcher = context.system.dispatcher
-        val noteFacadeFuture = createNoteDialog(self, appHandle)
-        noteFacadeFuture onSuccess {
-          case facade => facade.popUp()
-        }
+        noteDialog ! PomodoroNoteDialog.PopUpDialog(appHandle)
+        
       case x => 
         log.warning("got unexpected message " + x + "; sending to mainApp")
         mainApp ! x
