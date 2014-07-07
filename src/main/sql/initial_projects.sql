@@ -1,4 +1,8 @@
 insert into project (name, description) 
+       values ('No Project', '-');
+
+
+insert into project (name, description) 
        values ('Palatina', 'book collection database');
 
 
