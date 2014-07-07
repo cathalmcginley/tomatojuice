@@ -11,8 +11,7 @@ import akka.event.LoggingReceive
 import org.gnostai.tomatojuice.ui.NoteDialogModule
 import org.gnostai.tomatojuice.ui.NoteDialogModule
 
-trait StatusIconActorModule extends PomodoroCountdownActorModule
-  with AudioNotificationModule 
+trait StatusIconActorModule extends AudioNotificationModule 
   with CoreMessagesModule
   with PomodoroTrackerModule 
   with CoreConfigurationModule {   
