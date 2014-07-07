@@ -49,23 +49,26 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule
         }
     }
 
+    
+    
     /**
      * this is when a countdown timer has finished, but needs to be clicked to
      * confirm that the pomodoro has been completed...
      */
     def timerSuperInactive(iconFacade: STATUS_ICON, nextCountdown: CountdownTimer): Receive = LoggingReceive {
       case StatusIconActivated =>
-        log.info("activated - TODO start " + nextCountdown + " timer or whatever")
+        log.info("superInactive > activated; TODO pop down dialog if needed...")
+        
         context.become(timerInactive(iconFacade, nextCountdown))
         iconFacade.showStartIcon(nextCountdown)
         iconFacade.hintMessage("Ready to start " + nextCountdown)
         mainApp ! ConfirmPomodoroCompleted
-
+        context.parent ! PomodoroNoteDialog.PopDownNoteDialog
     }
 
     def timerInactive(iconFacade: STATUS_ICON, nextCountdown: CountdownTimer): Receive = {
       case StatusIconActivated =>
-        log.info("activated - TODO start " + nextCountdown + " timer or whatever")
+        log.info("inactive > activated")
         context.become(countingDown(iconFacade, nextCountdown))
         mainApp ! StartTimer
         iconFacade.hintMessage("Started timer for " + nextCountdown)
@@ -80,7 +83,6 @@ trait StatusIconActorModule extends PomodoroCountdownActorModule
         iconFacade.showMinutesRemaining(mins, timer)
       case CountdownTimerCompleted(nextTimer) =>
         iconFacade.timerCompleted()
-        context.parent ! PomodoroNoteDialog.PopUpNoteDialog
 
         context.become(timerSuperInactive(iconFacade, nextTimer))
         iconFacade.hintMessage("Finished timer for " + countdown)

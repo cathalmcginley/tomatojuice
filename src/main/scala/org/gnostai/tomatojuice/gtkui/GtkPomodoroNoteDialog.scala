@@ -11,8 +11,7 @@ import org.gnostai.tomatojuice.ui.NoteDialogModule
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import org.gnostai.tomatojuice.core.CoreDomainModule
-import org.gnostai.tomatojuice.core.CoreDomainModule
-import org.gnostai.tomatojuice.core.CoreDomainModule
+import org.gnostai.tomatojuice.ui.actors.PomodoroNoteDialogActorModule
 
 /*
  * 
@@ -33,6 +32,7 @@ import org.gnostai.tomatojuice.core.CoreDomainModule
 
 trait GtkPomodoroNoteDialogModule extends CoreDomainModule
   with GtkProjectListModule
+  with PomodoroNoteDialogActorModule
   with NoteDialogModule with GtkUIFacadeModule {
 
   type POMODORO_NOTE_DIALOG = GtkPomodoroNoteDialog
@@ -41,8 +41,10 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
     import scala.concurrent.ExecutionContext.Implicits.global
     val facadePromise = Promise[POMODORO_NOTE_DIALOG]
     safely {
+      println("safely")
       //val iconFacade = new GtkStatusIconFacade(iconActor, handle)
       val dialogFacade = new GtkPomodoroNoteDialog(mainUi, handle.guiHandle)
+      println("still in safety...")
       facadePromise success (dialogFacade)
     }
     facadePromise.future
@@ -50,8 +52,12 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
 
   class GtkPomodoroNoteDialog(mainUi: ActorRef, guiHandle: GUI_HANDLE) extends PomodoroNoteDialogFacade {
 
+    println("building")
+    
     val projectList = new GtkProjectList
 
+    println("building 2")
+    
     val (noteText, noteTextScroll) = buildNoteText
     val dialog = buildDialog
 
@@ -65,6 +71,15 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
         dialog.showAll()
         guiHandle.addWindow(dialog)
         dialog.present()
+      }
+    }
+    
+    def popDown() {
+      println("hiding dialog")
+      safely {
+        dialog.hide()
+        dialog.destroy()
+        guiHandle.removeWindow(dialog)
       }
     }
 
@@ -107,8 +122,13 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
       
       scriptButton.connect(new Button.Clicked() {
         def onClicked(source: Button) {
-          mainUi ! "Foo"
-
+          val projectOpt = projectList.getSelectedProject
+          val project = projectOpt.getOrElse(Project(Some(0), "Default", "-", None))
+                    
+          mainUi ! PomodoroNoteDialogActor.Save(
+              project,
+              noteText.getBuffer().getText())
+              
         }
       })
 

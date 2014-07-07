@@ -27,6 +27,10 @@ trait DatabaseModule extends PersistModule with PomodoroDatabaseModule
         pomodoroActor ! PomodoroPersist.PomodoroCompleted(id)
       case RecordNewProject(name, description, icon) =>
         projectActor ! ProjectPersist.CreateNewProject(name, description, icon, sender)
+        
+      
+      case x @ PomodoroPersist.SavePomodoroNote(id, project, note) =>
+        pomodoroActor ! x 
       case x @ CoreMessages.SendProjectList(origSender) =>
         projectActor ! x
     }

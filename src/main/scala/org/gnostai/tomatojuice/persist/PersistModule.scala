@@ -13,6 +13,7 @@ trait PersistModule  extends PomodoroPersistModule with ProjectPersistModule wit
       icon: Option[ImageData])
   
 
+      
   
   def createDBMainActor(context: ActorContext, name: String): ActorRef
   

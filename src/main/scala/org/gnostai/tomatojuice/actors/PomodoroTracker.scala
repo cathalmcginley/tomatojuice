@@ -52,6 +52,7 @@ trait PomodoroTrackerModule extends PomodoroCountdownModule
         }
         val nextTimer = nextTimerFor(timer, remaining)
         gossip(CountdownTimerCompleted(nextTimer))
+       
         context.become(timerInactive(nextTimer, remaining))
     }
 

@@ -16,7 +16,7 @@ trait TomatoJuiceUIMainModule {
   class TomatoJuiceUIMain(mainApp: ActorRef) extends Actor with ActorLogging {
 
     val statusIcon = context.actorOf(Props(new StatusIconActor(mainApp)), "PomodoroCountdownIcon")
-    val noteDialog = context.actorOf(Props(new PomodoroNoteDialogActor()), "PomodoroNoteDialog")
+    val noteDialog = context.actorOf(Props(new PomodoroNoteDialogActor(mainApp)), "PomodoroNoteDialog")
     
     def receive: Receive = {
       case StartUp =>
@@ -37,6 +37,16 @@ trait TomatoJuiceUIMainModule {
       case PomodoroNoteDialog.PopUpNoteDialog =>
         val appHandle = ApplicationHandle(context.system, self, guiHandle)
         noteDialog ! PomodoroNoteDialog.PopUpDialog(appHandle)
+        
+      case PomodoroNoteDialog.PopDownNoteDialog =>
+        val appHandle = ApplicationHandle(context.system, self, guiHandle)
+        noteDialog ! PomodoroNoteDialog.PopDownDialog(appHandle)
+  
+        
+      case PomodoroNoteDialog.NoteSaved =>
+        log.info("emitting a pseudo-click here...")
+        statusIcon ! StatusIconActivated
+        
       case x @ PomodoroNoteDialog.DialogClosing =>
         noteDialog ! PomodoroNoteDialog.DialogClosing
       case CoreMessages.GetProjectList =>
