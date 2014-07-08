@@ -27,7 +27,6 @@ import org.gnome.gdk.Event
 import org.gnome.gdk.Pixbuf
 import org.gnome.notify.Notification
 import org.gnome.notify.Notify
-import tomatojuice.JavaSounds
 import org.gnostai.tomatojuice.ui.NoteDialogModule
 import scala.concurrent.Future
 import scala.concurrent.Promise
