@@ -600,6 +600,7 @@ public class OggClip {
 	}
 	
 	private class InternalException extends Exception {
+		static final long serialVersionUID = 6582041173864829787L;
 		public InternalException(Exception e) {
 			super(e);
 		}
