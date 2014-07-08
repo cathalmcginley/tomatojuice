@@ -23,15 +23,12 @@ package org.gnostai.tomatojuice.actors
 
 import akka.actor._
 import scala.concurrent.Future
-import org.gnostai.tomatojuice.core.CoreMessagesModule
-import org.gnostai.tomatojuice.core.CoreConfigurationModule
 import akka.routing.Listeners
-import org.gnostai.tomatojuice.core.CoreDomainModule
+import org.gnostai.tomatojuice.core._
 
-trait PomodoroTrackerModule extends PomodoroCountdownModule
-  with CoreDomainModule
-  with CoreMessagesModule
-  with CoreConfigurationModule {
+trait PomodoroTrackerModule extends PomodoroCountdownModule {
+  
+  this: CoreDomainModule with CoreMessagesModule with CoreConfigurationModule =>
 
   object PomodoroTracker {
     case object TimerActivated
