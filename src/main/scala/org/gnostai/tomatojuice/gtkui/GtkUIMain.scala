@@ -32,24 +32,30 @@ import org.gnostai.tomatojuice.ui.StatusIconModule
 import org.gnostai.tomatojuice.ui.NoteDialogModule
 import org.gnostai.tomatojuice.ui.actors.PomodoroNoteDialogActorModule
 import org.gnostai.tomatojuice.core.ProductionCoreModule
+import org.gnostai.tomatojuice.ui.AudioNotificationModule
 
-object GtkUIMain extends ProductionCoreModule
-  with TomatoJuiceMainModule
-  with StatusIconActorModule
-  with StatusIconModule
+trait UI extends StatusIconModule 
+  with NoteDialogModule
+  with AudioNotificationModule
+  
+trait GtkUI extends UI
   with GtkUIFacadeModule
   with GtkStatusIconModule
   with GtkPomodoroNoteDialogModule
-  with NoteDialogModule
+
+object GtkUIMain extends GtkUI
+  with ProductionCoreModule
+  with JOrbisAudioNotificationModule
+  with TomatoJuiceMainModule
+  with StatusIconActorModule  
   with PomodoroNoteDialogActorModule
   with TomatoJuiceUIMainModule
-  with JOrbisAudioNotificationModule
+  
   with MySQLDatabaseModule {
 
   def main(args: Array[String]): Unit = {
     val system = ActorSystem("TomatoJuice")
     val mainApp = system.actorOf(Props(new TomatoJuiceMainActor), "TomatoJuice")
-    println(mainApp)
     mainApp ! TomatoJuiceMain.StartUI
   }
 }
