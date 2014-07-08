@@ -24,6 +24,7 @@ package org.gnostai.tomatojuice.actors
 import akka.actor._
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.language.postfixOps
 import org.gnostai.tomatojuice.core.CoreConfigurationModule
 
 trait PomodoroCountdownModule extends CoreConfigurationModule {

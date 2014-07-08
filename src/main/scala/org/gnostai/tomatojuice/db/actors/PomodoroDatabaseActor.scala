@@ -63,8 +63,8 @@ trait PomodoroDatabaseModule extends PomodoroPersistModule {
         val newId = rslt.getInt(1)
         val grandparent = context.actorSelection("../../")
 
-        val main = context.actorFor("akka://TomatoJuice/user/TomatoJuice")
-        main ! PomodoroPersist.PomodoroCreated(PomodoroDbId(newId))
+        val mainSelection = context.actorSelection("akka://TomatoJuice/user/TomatoJuice")
+        mainSelection ! PomodoroPersist.PomodoroCreated(PomodoroDbId(newId))
       }
       PomodoroDbId(count)
     }

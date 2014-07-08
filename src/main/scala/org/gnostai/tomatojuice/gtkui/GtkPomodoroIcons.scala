@@ -24,6 +24,8 @@ package org.gnostai.tomatojuice.gtkui
 import org.gnome.gdk
 import java.io.File
 
+import scala.language.implicitConversions
+
 /* @glib_unsafe */
 class GtkPomodoroIcons(baseDir: File) {
 
