@@ -23,6 +23,7 @@ package org.gnostai.tomatojuice.db
 
 import java.sql.ResultSet
 import java.sql.Connection
+import org.gnostai.tomatojuice.core.ProductionCoreModule
 
 trait QueryToStream {
 
@@ -48,18 +49,12 @@ trait QueryToStream {
 }
 
 
-object QueryMainX extends App with BoneConnectionPool {
+object QueryMainX extends App with BoneConnectionPool with ProductionCoreModule {
   
   
-    type ImageData = Array[Byte]
+    
 
-  case class Project(id: Option[Int],
-    name: String,
-    description: String,
-    icon: Option[ImageData]) {
-
-  }
-  
+    
    class ProjectDBUtilX extends QueryToStream {
 
     private def rsltToProject(rslt: ResultSet): Project = {

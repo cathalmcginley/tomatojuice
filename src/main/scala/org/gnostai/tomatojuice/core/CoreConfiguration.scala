@@ -22,9 +22,16 @@
 package org.gnostai.tomatojuice.core
 
 import java.io.File
+import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 
 trait CoreConfigurationModule {
+  
+  def config: Config
+  
+}
+
+trait ProductionCoreConfigurationModule extends CoreConfigurationModule {
 
   object CoreConfig {
 

@@ -45,6 +45,7 @@ trait CoreDomainModule {
 
 }
 
+// TODO  [QUERY]  is this needed?
 object CoreDomainModule extends CoreDomainModule {
   
 }

@@ -31,8 +31,10 @@ import org.gnostai.tomatojuice.ui.actors.StatusIconActorModule
 import org.gnostai.tomatojuice.ui.StatusIconModule
 import org.gnostai.tomatojuice.ui.NoteDialogModule
 import org.gnostai.tomatojuice.ui.actors.PomodoroNoteDialogActorModule
+import org.gnostai.tomatojuice.core.ProductionCoreModule
 
-object GtkUIMain extends TomatoJuiceMainModule
+object GtkUIMain extends ProductionCoreModule
+  with TomatoJuiceMainModule
   with StatusIconActorModule
   with StatusIconModule
   with GtkUIFacadeModule

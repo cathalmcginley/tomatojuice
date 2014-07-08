@@ -22,14 +22,14 @@
 package org.gnostai.tomatojuice.db.actors
 
 import org.gnostai.tomatojuice.db.BoneConnectionPool
-
 import akka.actor.ExtendedActorSystem
 import akka.actor.Extension
 import akka.actor.ExtensionId
 import akka.actor.ExtensionIdProvider
+import org.gnostai.tomatojuice.core.ProductionCoreModule
 
 class BoneConnectionPoolExtensionImpl(system: ExtendedActorSystem)
-  extends Extension with BoneConnectionPool {
+  extends Extension with BoneConnectionPool with ProductionCoreModule {
   
   //Since this Extension is a shared instance
   // per ActorSystem we need to be threadsafe
