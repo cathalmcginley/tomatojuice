@@ -26,9 +26,10 @@ import org.gnostai.tomatojuice.ui.NoteDialogModule
 import akka.event.LoggingReceive
 import org.gnostai.tomatojuice.core.CoreMessagesModule
 import org.gnostai.tomatojuice.actors.PomodoroTrackerModule
+import org.gnostai.tomatojuice.actors.PomodoroCountdownModule
 
 trait PomodoroNoteDialogActorModule extends NoteDialogModule with CoreMessagesModule
-  with PomodoroTrackerModule {
+  with PomodoroTrackerModule with PomodoroCountdownModule {
 
   object PomodoroNoteDialogActor {
     case class DisplayProjects(facade: POMODORO_NOTE_DIALOG)

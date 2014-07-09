@@ -31,11 +31,15 @@ import org.gnostai.tomatojuice.actors.PomodoroTrackerModule
 import akka.event.LoggingReceive
 import org.gnostai.tomatojuice.ui.NoteDialogModule
 import org.gnostai.tomatojuice.ui.NoteDialogModule
+import org.gnostai.tomatojuice.actors.PomodoroCountdownModule
+import org.gnostai.tomatojuice.core.CoreDomainModule
 
 trait StatusIconActorModule extends AudioNotificationModule 
   with CoreMessagesModule
   with PomodoroTrackerModule 
-  with CoreConfigurationModule {   
+  with CoreDomainModule
+  with CoreConfigurationModule 
+  with PomodoroCountdownModule {   
     
   this: StatusIconModule with PomodoroNoteDialogActorModule =>
 
@@ -47,8 +51,6 @@ trait StatusIconActorModule extends AudioNotificationModule
     import CoreMessages._
 
     import PomodoroTracker._
-
-    val countdownActor = context.actorOf(Props(new PomodoroCountdownActor))
 
     mainApp ! RegisterPomodoroListener(self)
 
