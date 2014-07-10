@@ -33,23 +33,6 @@ import scala.concurrent.Promise
 import org.gnostai.tomatojuice.core.CoreDomainModule
 import org.gnostai.tomatojuice.ui.actors.PomodoroNoteDialogActorModule
 
-/*
- * 
- * trait NoteDialogModule extends UIFacadeModule {
-
-  abstract class PomodoroNodeDialogFacade extends UIFacade {
-    
-    def popUp()
-    
-  }
-  
-  type POMODORO_NOTE_DIALOG <: PomodoroNodeDialogFacade
-  
-  def createNoteDialog(handle: ApplicationHandle): Future[POMODORO_NOTE_DIALOG]
-  
-}
- */
-
 trait GtkPomodoroNoteDialogModule extends CoreDomainModule
   with GtkProjectListModule
   with PomodoroNoteDialogActorModule
@@ -61,23 +44,14 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
     import scala.concurrent.ExecutionContext.Implicits.global
     val facadePromise = Promise[POMODORO_NOTE_DIALOG]
     safely {
-      println("safely")
-      //val iconFacade = new GtkStatusIconFacade(iconActor, handle)
       val dialogFacade = new GtkPomodoroNoteDialog(mainUi, handle.guiHandle)
-      println("still in safety...")
       facadePromise success (dialogFacade)
     }
     facadePromise.future
   }
 
   class GtkPomodoroNoteDialog(mainUi: ActorRef, guiHandle: GUI_HANDLE) extends PomodoroNoteDialogFacade {
-
-    println("building")
-    
     val projectList = new GtkProjectList
-
-    println("building 2")
-    
     val (noteText, noteTextScroll) = buildNoteText
     val dialog = buildDialog
 
@@ -86,7 +60,6 @@ trait GtkPomodoroNoteDialogModule extends CoreDomainModule
     }
 
     def popUp() {
-      println("showing dialog")
       safely {
         dialog.showAll()
         guiHandle.addWindow(dialog)
