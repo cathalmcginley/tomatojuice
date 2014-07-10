@@ -25,8 +25,7 @@ import com.jolbox.bonecp.BoneCPDataSource
 import org.gnostai.tomatojuice.core.CoreConfigurationModule
 import org.gnostai.tomatojuice.core.CoreModule
 
-trait BoneConnectionPool {
-  this: CoreConfigurationModule =>
+trait BoneConnectionPool extends CoreConfigurationModule {
   
   lazy val pool = {
     val ds = new BoneCPDataSource()

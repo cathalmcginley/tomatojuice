@@ -33,15 +33,13 @@ import org.gnostai.tomatojuice.ui.NoteDialogModule
 import org.gnostai.tomatojuice.ui.NoteDialogModule
 import org.gnostai.tomatojuice.actors.PomodoroCountdownModule
 import org.gnostai.tomatojuice.core.CoreDomainModule
+import org.gnostai.tomatojuice.core.CoreModule
 
-trait StatusIconActorModule extends AudioNotificationModule 
-  with CoreMessagesModule
+trait StatusIconActorModule extends CoreModule with AudioNotificationModule 
   with PomodoroTrackerModule 
-  with CoreDomainModule
-  with CoreConfigurationModule 
-  with PomodoroCountdownModule {   
+     
     
-  this: StatusIconModule with PomodoroNoteDialogActorModule =>
+  with StatusIconModule with PomodoroNoteDialogActorModule {
 
   class StatusIconActor(mainApp: ActorRef) extends Actor with ActorLogging {
 
