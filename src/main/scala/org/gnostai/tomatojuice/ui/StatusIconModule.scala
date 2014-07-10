@@ -25,9 +25,7 @@ import akka.actor.ActorRef
 import scala.concurrent.Future
 import org.gnostai.tomatojuice.core.CoreDomainModule
 
-trait StatusIconModule extends UIFacadeModule with CoreDomainModule {
-  
-  this: NoteDialogModule =>
+trait StatusIconModule extends CoreDomainModule with UIFacadeModule with NoteDialogModule {
   
   case class DisplayInitialStatusIcon(handle: GUI_HANDLE) extends Message
   case object StatusIconActivated extends Message

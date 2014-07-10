@@ -27,9 +27,8 @@ import akka.event.LoggingReceive
 import org.gnostai.tomatojuice.ui.NoteDialogModule
 import org.gnostai.tomatojuice.ui.StatusIconModule
 
-trait TomatoJuiceUIMainModule { 
-  this: StatusIconActorModule with StatusIconModule
-  with PomodoroNoteDialogActorModule with NoteDialogModule =>
+trait TomatoJuiceUIMainModule extends StatusIconActorModule with StatusIconModule
+  with PomodoroNoteDialogActorModule with NoteDialogModule {
 
   case object StartUp
   

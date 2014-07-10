@@ -26,9 +26,7 @@ import scala.concurrent.Future
 import akka.routing.Listeners
 import org.gnostai.tomatojuice.core._
 
-trait PomodoroTrackerModule {
-
-  this: CoreDomainModule with CoreMessagesModule with CoreConfigurationModule with PomodoroCountdownModule =>
+trait PomodoroTrackerModule extends CoreModule with PomodoroCountdownModule {
 
   object PomodoroTracker {
     case object TimerActivated
@@ -101,7 +99,5 @@ trait PomodoroTrackerModule {
 
 trait ProductionPomodoroTrackerModule extends PomodoroTrackerModule
   with PomodoroCountdownModule {
-
-  this: CoreDomainModule with CoreMessagesModule with CoreConfigurationModule =>
-
+  
 }

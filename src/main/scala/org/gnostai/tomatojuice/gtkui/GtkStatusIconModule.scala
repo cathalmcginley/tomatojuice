@@ -30,8 +30,8 @@ import scala.concurrent.Promise
 import org.gnostai.tomatojuice.core.CoreConfigurationModule
 import java.io.File
 
-trait GtkStatusIconModule extends GtkUIFacadeModule {
-   this:StatusIconModule =>
+trait GtkStatusIconModule extends StatusIconModule with GtkUIFacadeModule {
+   
 
 
   class GtkStatusIconFacade(iconActor: ActorRef, handle: GUI_HANDLE) extends StatusIconFacade {

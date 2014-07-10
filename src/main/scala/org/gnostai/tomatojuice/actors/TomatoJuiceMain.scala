@@ -28,9 +28,9 @@ import org.gnostai.tomatojuice.persist.PersistModule
 import org.gnostai.tomatojuice.core.CoreMessagesModule
 import akka.routing.Listen
 
-trait TomatoJuiceMainModule extends CoreMessagesModule with PomodoroTrackerModule with PomodoroCountdownModule {
-
-  this: TomatoJuiceUIMainModule with PersistModule =>
+trait TomatoJuiceMainModule extends PomodoroTrackerModule 
+  with TomatoJuiceUIMainModule 
+  with PersistModule {
 
   object TomatoJuiceMain {
     case object StartUI
