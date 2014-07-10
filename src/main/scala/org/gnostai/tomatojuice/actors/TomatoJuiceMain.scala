@@ -36,13 +36,16 @@ trait TomatoJuiceMainModule extends PomodoroTrackerModule
     case object StartUI
 
   }
-
-  class TomatoJuiceMainActor extends Actor with ActorLogging {
+  class TomatoJuiceMainActorImpl extends Actor with TomatoJuiceMainActor {
+    val pomodoroTracker = context.actorOf(Props(new PomodoroTrackerActorImpl(self)), "PomodoroTracker")
+  }
+  
+  trait TomatoJuiceMainActor extends ActorLogging { this: Actor =>
 
     import CoreMessages._
     import TomatoJuiceMain._
 
-    val pomodoroTracker = context.actorOf(Props(new PomodoroTrackerActor(self)), "PomodoroTracker")
+    def pomodoroTracker: ActorRef
     val db = createDBMainActor(context, "TomatoJuiceDB")
     val uiMain = context.actorOf(Props(new TomatoJuiceUIMain(self)), "TomatoJuiceUI")
 

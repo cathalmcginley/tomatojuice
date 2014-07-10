@@ -27,6 +27,9 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import org.gnostai.tomatojuice.core.CoreConfigurationModule
 
+trait PomodoroCountdownModuleImpl extends PomodoroCountdownModule {
+  override def newPomodoroCountdownActor(tracker: ActorRef): Actor = PomodoroCountdownActor(tracker)
+}
 trait PomodoroCountdownModule extends CoreConfigurationModule {
 
   object PomodoroCountdown {
@@ -37,12 +40,20 @@ trait PomodoroCountdownModule extends CoreConfigurationModule {
     case object TimerCancelled
   }
 
-  class PomodoroCountdownActor extends Actor with ActorLogging {
-
+  
+  class PomodoroCountdownActorImpl(val pomodoroTracker: ActorRef) extends Actor with PomodoroCountdownActor 
+  object PomodoroCountdownActor {
+    def apply(tracker: ActorRef): Actor = new PomodoroCountdownActorImpl(tracker)
+  }
+  
+  def newPomodoroCountdownActor(tracker: ActorRef): Actor
+  
+  trait PomodoroCountdownActor extends ActorLogging { this: Actor =>
+    
     import PomodoroCountdown._
 
     val pomodoroConfig = config.getConfig("tomatojuice.pomodoro")
-    val pomodoroTracker = context.parent
+    def pomodoroTracker: ActorRef
 
     private val OneMinute = {
       /* 

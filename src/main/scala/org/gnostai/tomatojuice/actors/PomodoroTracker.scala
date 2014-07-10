@@ -35,16 +35,22 @@ trait PomodoroTrackerModule extends CoreModule with PomodoroCountdownModule {
 
   }
 
-  class PomodoroTrackerActor(mainApp: ActorRef) extends Actor
-    with Listeners
-    with ActorLogging {
+  
+  class PomodoroTrackerActorImpl(val mainApp: ActorRef) extends Actor with PomodoroTrackerActor {
+    val countdownActor = context.actorOf(Props(newPomodoroCountdownActor(self)))
+  }
+  
+  
+  trait PomodoroTrackerActor extends Listeners with ActorLogging { this: Actor =>
 
     import CoreMessages._
     import PomodoroTracker._
     import PomodoroCountdown._
 
     val pomodoroConfig = config.getConfig("tomatojuice.pomodoro")
-    val countdownActor = context.actorOf(Props(new PomodoroCountdownActor))
+    val actor: Actor = newPomodoroCountdownActor(self)
+    def mainApp: ActorRef
+    def countdownActor: ActorRef
 
     def receive = timerInactive(PomodoroCountdownTimer, pomodorosBeforeLongBreak) orElse listenerManagement
 
