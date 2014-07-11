@@ -21,9 +21,35 @@
 
 package org.gnostai.tomatojuice.core
 
-trait CoreModule extends CoreConfigurationModule with CoreDomainModule with CoreMessagesModule {
+import java.io.File
+import java.nio.file.Paths
+
+trait TestCoreConfigurationModule extends CoreConfigurationModule {
+
+    
+  object TestConfig extends ConfigBuilder {
+       
+     lazy val userConfigFile: File = {
+      val currDir = System.getProperty("user.dir")
+      val confFilePath = Paths.get(currDir, "src", "test", "resources", "test.conf")
+      confFilePath.toAbsolutePath().toFile()
+    }
+     
+    println(userConfigFile.getAbsolutePath()) 
+  }
+
+  def config = TestConfig.config
 
 }
 
-trait ProductionCoreModule extends CoreModule  
-  with ProductionCoreConfigurationModule
+trait TestCoreModule extends CoreModule  
+  with TestCoreConfigurationModule
+  with CoreDomainModule
+  with CoreMessagesModule
+  
+object TestConfiguration extends TestCoreConfigurationModule {}
+
+
+object Foo extends App {
+  println(TestConfiguration.config.getInt("tomatojuice.pomodoro.duration")) 
+}

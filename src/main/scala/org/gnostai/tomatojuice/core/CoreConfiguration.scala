@@ -27,20 +27,9 @@ import com.typesafe.config.ConfigFactory
 
 trait CoreConfigurationModule {
   
-  def config: Config
-  
-}
+  trait ConfigBuilder {
 
-trait ProductionCoreConfigurationModule extends CoreConfigurationModule {
-
-  object CoreConfig {
-
-    lazy val userConfigFile: File = {
-      val homeDir = System.getProperty("user.home")
-      val configDir = new File(homeDir, ".config")
-      val tjConfigDir = new File(configDir, "tomatojuice")
-      new File(tjConfigDir, "application.conf")
-    }
+    def userConfigFile: File
 
     lazy val userConfig = ConfigFactory.parseFile(userConfigFile)
 
@@ -50,6 +39,24 @@ trait ProductionCoreConfigurationModule extends CoreConfigurationModule {
       userConfig.withFallback(classpathConfig).resolve()
     }
 
+  }
+
+  
+  
+  def config: Config
+  
+}
+
+trait ProductionCoreConfigurationModule extends CoreConfigurationModule {
+
+    
+  object CoreConfig extends ConfigBuilder {
+     lazy val userConfigFile: File = {
+      val homeDir = System.getProperty("user.home")
+      val configDir = new File(homeDir, ".config")
+      val tjConfigDir = new File(configDir, "tomatojuice")
+      new File(tjConfigDir, "application.conf")
+    }
   }
 
   def config = CoreConfig.config

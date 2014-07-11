@@ -1,3 +1,24 @@
+/*
+ * Copyright (C) 2014 Cathal Mc Ginley
+ *
+ * This file is part of TomatoJuice, a Pomodoro timer-tracker for GNOME.
+ *
+ * TomatoJuice is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * TomatoJuice is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with TomatoJuice; see the file COPYING. If not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA.
+*/
+
 package org.gnostai.tomatojuice.actors
 
 import akka.testkit._
@@ -6,11 +27,10 @@ import org.scalatest._
 import org.gnostai.tomatojuice.core._
 import com.typesafe.config.ConfigFactory
 import java.io.File
+import java.nio.file.Path
+import java.nio.file.Paths
 
-trait TestCoreModule extends CoreModule  
-  with ProductionCoreConfigurationModule
-  with CoreDomainModule
-  with CoreMessagesModule
+
 
 trait TestPomodoroCountdownModule extends PomodoroCountdownModule {
   
@@ -42,7 +62,8 @@ trait TestPomodoroTrackerModule extends PomodoroTrackerModule {
 // TODO FIX - the config uses the ordinary ~/.config/tomatojuice/application.conf
 //            we need to create a PROPER TestCoreConfiguration that loads from src/test/resources
 
-class PomodoroTrackerSpec extends TestKit(ActorSystem("PomodoroTrackerSpec", ConfigFactory.parseFile(new File("src/test/resources/test.conf"))))
+
+class PomodoroTrackerSpec extends TestKit(ActorSystem("PomodoroTrackerSpec", TestConfiguration.config))
   with WordSpecLike
   with MustMatchers
   with BeforeAndAfterAll 
@@ -61,7 +82,7 @@ class PomodoroTrackerSpec extends TestKit(ActorSystem("PomodoroTrackerSpec", Con
         "begin with a 25 timer" in {
           val testTracker = TestActorRef(new TestPomodoroTrackerActor(testActor, testActor))
           testTracker ! TimerActivated
-          expectMsg(PomodoroCountdown.StartCountdown(25))
+          expectMsg(PomodoroCountdown.StartCountdown(23))
           expectMsg(CoreMessages.NewPomodoroStarted)
          
         }

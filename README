@@ -15,6 +15,8 @@ It uses:
  * Akka Actors
  * MySQL
 
+It requires Scala 2.11 and Java 1.7
+
 It should be generally useful as a time-tracker, but it is also
 intended as an experimental piece of software to rough-out ideas which
 will be used in the architecture of Palatina.
