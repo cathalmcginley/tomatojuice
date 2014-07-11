@@ -25,6 +25,7 @@ import akka.actor._
 import scala.concurrent.Future
 import akka.routing.Listeners
 import org.gnostai.tomatojuice.core._
+import scala.collection.JavaConversions
 
 trait PomodoroTrackerModule extends CoreModule with PomodoroCountdownModule {
 
@@ -35,22 +36,29 @@ trait PomodoroTrackerModule extends CoreModule with PomodoroCountdownModule {
 
   }
 
-  
-  class PomodoroTrackerActorImpl(val mainApp: ActorRef) extends Actor with PomodoroTrackerActor {
-    val countdownActor = context.actorOf(Props(newPomodoroCountdownActor(self)))
-  }
-  
-  
   trait PomodoroTrackerActor extends Listeners with ActorLogging { this: Actor =>
+
+    def mainApp: ActorRef
+    def countdownActor: ActorRef
+
+    def timerInactive(nextCountdown: CountdownTimer, pomodorosRemaining: Int): Receive
+    def countingDown(timer: CountdownTimer, pomodorosRemaining: Int): Receive
+
+    protected def pomodorosBeforeLongBreak: Int
+
+    protected def nextTimerFor(countdown: CountdownTimer, pomodorosRemaining: Int): CountdownTimer
+
+    protected def minutesToCountDown(countdown: CountdownTimer): Int
+
+  }
+
+  trait PomodoroTrackerActorImpl extends PomodoroTrackerActor { this: Actor =>
 
     import CoreMessages._
     import PomodoroTracker._
     import PomodoroCountdown._
 
     val pomodoroConfig = config.getConfig("tomatojuice.pomodoro")
-    val actor: Actor = newPomodoroCountdownActor(self)
-    def mainApp: ActorRef
-    def countdownActor: ActorRef
 
     def receive = timerInactive(PomodoroCountdownTimer, pomodorosBeforeLongBreak) orElse listenerManagement
 
@@ -66,6 +74,12 @@ trait PomodoroTrackerModule extends CoreModule with PomodoroCountdownModule {
       case MinutesRemaining(mins) =>
         gossip(CountdownMinutesRemaining(timer, mins))
       case TimerCompleted =>
+        System.err.println("> " + TimerCompleted)
+        import JavaConversions._
+        for (x <- listeners) {
+          System.err.println(" + " + x)
+        }
+         System.err.println(" !!+ " + listeners.size())
         gossip(CountdownMinutesRemaining(timer, 0))
         val remaining = timer match {
           case PomodoroCountdownTimer => pomodorosRemaining
@@ -78,9 +92,9 @@ trait PomodoroTrackerModule extends CoreModule with PomodoroCountdownModule {
         context.become(timerInactive(nextTimer, remaining))
     }
 
-    private def pomodorosBeforeLongBreak = pomodoroConfig.getInt("pomodorosBeforeLongBreak")
+    protected def pomodorosBeforeLongBreak = pomodoroConfig.getInt("pomodorosBeforeLongBreak")
 
-    private def nextTimerFor(countdown: CountdownTimer, pomodorosRemaining: Int): CountdownTimer = {
+    protected def nextTimerFor(countdown: CountdownTimer, pomodorosRemaining: Int): CountdownTimer = {
       countdown match {
         case PomodoroCountdownTimer =>
           if (pomodorosRemaining > 1)
@@ -92,18 +106,22 @@ trait PomodoroTrackerModule extends CoreModule with PomodoroCountdownModule {
       }
     }
 
-    private def minutesToCountDown(countdown: CountdownTimer) = {
+    protected def minutesToCountDown(countdown: CountdownTimer) = {
       countdown match {
         case PomodoroCountdownTimer => pomodoroConfig.getInt("duration")
         case ShortBreakCountdownTimer => pomodoroConfig.getInt("breakDuration")
         case LongBreakCountdownTimer => pomodoroConfig.getInt("longBreakDuration")
       }
     }
-
   }
+
+  class PomodoroTrackerActorProductionImpl(val mainApp: ActorRef) extends Actor with PomodoroTrackerActorImpl {
+    val countdownActor = context.actorOf(Props(newPomodoroCountdownActor(self)))
+  }
+
 }
 
 trait ProductionPomodoroTrackerModule extends PomodoroTrackerModule
   with PomodoroCountdownModule {
-  
+
 }

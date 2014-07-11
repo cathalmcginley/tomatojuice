@@ -29,63 +29,64 @@ import com.typesafe.config.ConfigFactory
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
-
-
+import akka.routing.Listen
 
 trait TestPomodoroCountdownModule extends PomodoroCountdownModule {
-  
-  implicit def system: ActorSystem  // satisfied by extending TestKit
-  
-  
+
+  implicit def system: ActorSystem // satisfied by extending TestKit
+
   class TestCountdownActor(val pomodoroTracker: ActorRef) extends Actor with PomodoroCountdownActor {
-     
+
     override def receive = timerInactive
   }
-  
+
   lazy val countdown = TestActorRef(new TestCountdownActor(null))
-  
-  override def newPomodoroCountdownActor(tracker: ActorRef): Actor = 
+
+  override def newPomodoroCountdownActor(tracker: ActorRef): Actor =
     countdown.underlyingActor
-  
-}  
+
+}
 
 trait TestPomodoroTrackerModule extends PomodoroTrackerModule {
-  class TestPomodoroTrackerActor(val mainApp: ActorRef, val countdownActor: ActorRef) extends Actor with PomodoroTrackerActor {
-    
-   val pomodorosBeforeLongBreak = config.getInt("tomatojuice.pomodoro.pomodorosBeforeLongBreak")
-    
-    
-    override def receive = timerInactive(PomodoroCountdownTimer, pomodorosBeforeLongBreak)
+  class TestPomodoroTrackerActor(val mainApp: ActorRef, val countdownActor: ActorRef) extends Actor with PomodoroTrackerActorImpl {
+
+    override def receive = timerInactive(PomodoroCountdownTimer, pomodorosBeforeLongBreak) orElse listenerManagement
   }
 }
-  
-// TODO FIX - the config uses the ordinary ~/.config/tomatojuice/application.conf
-//            we need to create a PROPER TestCoreConfiguration that loads from src/test/resources
-
 
 class PomodoroTrackerSpec extends TestKit(ActorSystem("PomodoroTrackerSpec", TestConfiguration.config))
   with WordSpecLike
   with MustMatchers
-  with BeforeAndAfterAll 
-  with PomodoroTrackerModule 
+  with BeforeAndAfterAll
+  with PomodoroTrackerModule
   with TestPomodoroCountdownModule
   with TestPomodoroTrackerModule
   with TestCoreModule {
 
-    import PomodoroTracker._
-  
+  import PomodoroTracker._
 
-    override def afterAll() { system.shutdown() }
+  override def afterAll() { system.shutdown() }
 
-    
-      "the pomodoro tracker" should {
-        "begin with a 25 timer" in {
-          val testTracker = TestActorRef(new TestPomodoroTrackerActor(testActor, testActor))
-          testTracker ! TimerActivated
-          expectMsg(PomodoroCountdown.StartCountdown(23))
-          expectMsg(CoreMessages.NewPomodoroStarted)
-         
-        }
+  "the pomodoro tracker" should {
+    "begin with a 23 minute timer" in {
+      val testTracker = TestActorRef(new TestPomodoroTrackerActor(testActor, testActor))
+      testTracker ! TimerActivated
+      expectMsg(PomodoroCountdown.StartCountdown(23))
+      expectMsg(CoreMessages.NewPomodoroStarted)
+    }
+
+    "register listeners" in {
+      val testTracker = TestActorRef(new TestPomodoroTrackerActor(testActor, testActor))
+      testTracker.receive(Listen(testActor))  // so we receive the response
+      testTracker.receive(TimerActivated)     // to ensure it's `countingDown`
+      
+      testTracker ! PomodoroCountdown.TimerCompleted
+      
+      fishForMessage() {
+        case PomodoroTracker.CountdownTimerCompleted(ShortBreakCountdownTimer) => true
+        case x => false
       }
+    }
+  }
 
 }
